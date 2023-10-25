@@ -6,12 +6,23 @@ const MONGO_URL = process.env.MONGO;
 const {createCustomLogger} = require('./util/loggers/customLogger');
 const userRoutes = require('./routes/userRoutes');
 const passport = require('passport');
+const credentials = require('./middleware/credentials');
+const cors = require('cors');
+const corsOptions = require('./config/cors/corsOptions');
+
 /*
  * Node js is a waterfall approach
  * */
 
 // Connect to express framework
 const app = express();
+
+// Handle options credentials check - before CORS!
+// and fetch cookies credentials requirement
+app.use(credentials);
+
+// Cross Origin Resource Sharing
+app.use(cors(corsOptions));
 
 // Create custom winston logger to log files
 const customLogger = createCustomLogger('server', 'serverts-logs');
