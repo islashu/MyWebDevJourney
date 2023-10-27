@@ -1,0 +1,40 @@
+This directory contains the custom hooks for the entire project
+
+a custom hook is usually a composition of other native hooks like useState, useEffect together
+
+it may or may not return something but if it returns something, it is usually an array contain a state and a fn to manipulate that state, very similar to the syntax of useState
+
+
+You will need to create a custom hook if you have some functions that acts as a middleware something
+
+e.g. reduxMiddleware -> UserSlice
+
+reduxMiddleware contains abstracted functions that do something so that we could avoid directly using the functions found in the authSlice.
+The reason for creating this middleware is because redux works with plain js objects and it is a pain to convert and reconvert objects just so we can add it to redux
+so i was thinking of just doing all the conversion properly before it (correctly) and just convert into a plain js object once and save it hence the middleware
+
+The file started off as a normal file containing js functions try catch etc but when i use a hook it in like useDispatch or any other hooks like useState.
+The file now becomes a custom hook
+
+if your file contains a useCustomHook/ use<hook>
+This file automatically becomes a custom hook
+
+Creating your own custom hook. Take note:
+
+create a wrapper function with the use<file> and wrap around the entire file, its up to you if you want to return a state or not
+
+if you still can't see the difference between a custom hook and a file containing normal JS function
+
+compare auth.api.ts and authSlice.service.ts
+
+
+
+// If you want to return a bunch of functions in your custom hook return it as an object instead of an array
+
+return {fn(1), fn(2), fn(3)}
+
+This is because if you use an array, you can to take in every single method when using the hook cause the values are assigned via indexes
+const [setReduxUserSliceJwtToken, updateReduxUserSliceIsAuthenticatedStatus, updateReduxUserSlice, getReduxAccessToken] = useReduxAuthSliceService();
+
+If you use an object, you can just reference the method that you want and not have to take in the other methods
+const {setReduxUserSliceJwtToken}  = useReduxAuthSliceService();

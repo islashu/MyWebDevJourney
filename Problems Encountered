@@ -1,0 +1,30 @@
+Qns: Posting using axios causes re-render and state to be lost
+Ans: e.preventDefault()
+prevent the page from reloading and unmounting the component when submitting the form (default html behaviour), this prevents state from being lost
+
+
+// Please return your axios or else your await will have issues
+
+
+
+
+// How are we going to manage errors from http request and how are we going to create a error handling middleware to response to the different sort
+of error and pass on the correct message to the user?
+do we use error codes?
+
+and maintain the error code on both side?
+
+we need to pass down the error to trigger the try catch block in another place.
+
+
+// max call this is because of the hook is referencing itself
+
+
+
+// typing in input causes onChange which causes a re-render which retriggers all the hooks
+
+
+// Do we want the httplogin user to interact with redux or do you want to do it in the login page??
+we will perform all the necessary actions in the loginpage because from a new comer, the logic thing to find all the login logic
+is in the login page as opposed to the auth api
+like in angular where we only access the service when we want to post things out

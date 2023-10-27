@@ -1,0 +1,5 @@
+This directory contains the common components that can be used through the entire frontend such as buttons, navbar, sidebar etc
+
+Creating a component template can be easily done using shortcuts in Webstorm
+rsc - arrow function component
+rsf - function component

@@ -1,0 +1,26 @@
+This directory contains only context api. Usually context apis is sparingly as we have redux to push our global states to.
+
+Create the context template here by using authContext then wrap it with the children wrapper.
+
+e.g.
+const AuthContext = createContext({});
+
+export const AuthProvider = ({ children }) => {
+
+    // Another way to store auth instead of redux
+    const [auth, setAuth] = useState<User>(new User("","","",""));
+    return (
+        <AuthContext.Provider value={{ auth, setAuth }}>
+            {children}
+        </AuthContext.Provider>
+    )
+}
+
+export default AuthContext;
+
+
+This creates the template but you will have to call it by wrapping the provider around something you want. You can wrap around the app so that you create a global state like this in the main.tsx.
+
+ <AuthProvider>
+    <App />
+ </AuthProvider>

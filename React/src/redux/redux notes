@@ -1,0 +1,16 @@
+This directory contains the store (redux) and the different slices (containers) so that we can push state into it and the state can be access anywhere.
+Redux is a global state management tool so that we can essentially hold global state or state that exist more than 2 level of depth so that we can avoid prop drilling.
+
+There is no need to trigger a re-render by calling some function in redux, it is automatically done by redux
+
+Please use redux toolkit to reduce the amount of boilerplate code.
+
+
+
+To get the value from redux
+
+// Getting the value from redux, we are currently getting the entire userObject. Syntax = <name of slice in store>.<specific property in initial state>
+    const user = useSelector((state) => state.authSlice);
+
+
+Note that all services in redux are custom hooks
