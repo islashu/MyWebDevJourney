@@ -1,3 +1,6 @@
+import {JwtObject} from '../../models/jwt.model';
+import {UserDocument} from '../../models/user.model';
+
 const {User, UserDocument} = require('../../models/user.model');
 require('dotenv').config();
 const passport = require('passport');
@@ -5,6 +8,7 @@ const passportJWT = require('passport-jwt');
 // If you every have an error recognising this in your IDE, npm i @types/passportJWT-jwt --D
 const JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
+const {getUniqueUserByUsername, saveUserIntoDB, getUniqueUserByRefreshToken} = require('../../repository/user.repository');
 
 /*
  * Passport documentation is not good. Don't refer to that. This file's purpose is to configure/transform the passportObj
@@ -20,7 +24,7 @@ const JwtStrategy = require('passport-jwt').Strategy,
  * What this does is that it will set the settings in "passport strategy" to the jwtOptions
  * such as allowing it to take the jwttoken from the authorization header and allow it to decode the jwt token based on a certain algo
  *
- * Afterwards, the passport strategy requires the user object to compare the jwttoken that it received from the request
+ * Afterwards, the passport strategy requires the auth object to compare the jwttoken that it received from the request
  * It will perform an internal comparison and return a true or false with res.status
  *
  * To get the value of this comparison, use the middleware, passport strategy.authenticate('jwt', {session: false})
@@ -30,7 +34,7 @@ const JwtStrategy = require('passport-jwt').Strategy,
  * Not all routes require authentication, if this is triggered for all routes, people will have to create an account just to view anything and
  * the resources is gated behind an account.
  *
- * Note that passport strategy does not issue a JWT, or refresh token, create your user for you, it does not even attached the jwt token to your header.
+ * Note that passport strategy does not issue a JWT, or refresh token, create your auth for you, it does not even attached the jwt token to your header.
  * You have to do this yourself. The passport strategy only authenticates existing tokens which means that the first login you will have to issue a JWT token before you can run the passport strategy authenticate middleware
  * This is all define by the developer and their own ways. passport strategy just authenticates based on a certain requirement and simply return yes or no to proceed forward.
  *
@@ -52,31 +56,27 @@ const jwtOptions = {
  * What goes on in JWT Strategy is that it performs JWT checking by comparing the signed version with the incoming JWT token
  * Which if not for this lib, we will have to manually do it,
  * */
-const strategy = new JwtStrategy(jwtOptions, (payload, next) => {
-    console.log(payload);
+const strategy = new JwtStrategy(jwtOptions, async (decodedPayload, next) => {
     /*
-     We need to get the user from the DB so that we can perform the authentication for us using the configuration.
      IMPT!!
+     The structure of the verify function must be the same.
      The return object (isError, obj)
      The first parameter check if there is an error with the auth process
      The second parameter is to return the obj for attachment, if false, means there is an error
+
+     You have to add your own verification based on the payload.
+     Passport only does the decoding of the jwtToken but the verification of the contents of the jwtToken is up to the developer
     */
-    User.findOne({name: payload.name})
-        .then((userObj) => {
-            if (userObj) {
-                /*
-                 * The main reason why you can just pass the userObj and passport strategy just knows which field to perform the JWT is because
-                 * Passport requires that the object contains the specifically defined fields of username and password and no other abbreviations
-                 * */
-                return next(null, userObj);
-            } else {
-                return next(null, false);
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            next(err, null);
-        });
+
+    //  ----------------------------------------------- Add custom verification here -----------------------------------------------
+    const username = decodedPayload.userInfo.username;
+    const userFound: UserDocument = await getUniqueUserByUsername(username);
+    if (!userFound) {
+        return next(null, false);
+    } else {
+        return next(null, userFound);
+    }
+    //  ----------------------------------------------- Add custom verification here -----------------------------------------------
 });
 
 module.exports = (passport) => {

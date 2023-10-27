@@ -17,7 +17,7 @@ const validator = require('../util/forms/form.validators');
 export interface UserDocument {
     username: string;
     password: string;
-    email: string;
+    emailAddress: string;
     refreshToken: string;
     createdDT: Date;
     updatedDT: Date;

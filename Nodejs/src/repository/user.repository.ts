@@ -6,16 +6,16 @@ const getUniqueUserByUsername = async (name): Promise<UserDocument> => {
     try {
         return await User.findOne({username: name});
     } catch (err) {
-        logger.info('Error with retrieving user by username from database');
+        logger.info('Error with retrieving auth by username from database');
         logger.info(err);
     }
 };
 
-const getUniqueUserByField = async (field, fieldVal): Promise<UserDocument> => {
+const getUniqueUserByRefreshToken = async (fieldVal): Promise<UserDocument> => {
     try {
-        return await User.findOne({field: fieldVal});
+        return await User.findOne({refreshToken: fieldVal});
     } catch (err) {
-        logger.info('Error with retrieving user by username from database');
+        logger.info('Error with retrieving auth by username from database');
         logger.info(err);
     }
 };
@@ -24,9 +24,9 @@ const saveUserIntoDB = async (user) => {
     try {
         return await user.save();
     } catch (err) {
-        logger.info('Error with save user by username from database');
+        logger.info('Error with save auth by username from database');
         logger.info(err);
     }
 };
 
-module.exports = {getUniqueUserByUsername, saveUserIntoDB, getUniqueUserByField};
+module.exports = {getUniqueUserByUsername, saveUserIntoDB, getUniqueUserByRefreshToken};

@@ -46,8 +46,8 @@ const issueAccessToken = (userFound: UserDocument, expiresIn?: number): string =
 };
 
 /*
- * This will generate a refresh token that is provided to the user and also stored in the DB at the time of login
- * When the first access token expires, the user will provide the refresh token and the server will compare the refresh token in the DB
+ * This will generate a refresh token that is provided to the auth and also stored in the DB at the time of login
+ * When the first access token expires, the auth will provide the refresh token and the server will compare the refresh token in the DB
  * if both token are the same, a new access token with a longer expiry date is provided.
  * */
 const issueRefreshToken = (foundUser: UserDocument, expiresIn?: number) => {

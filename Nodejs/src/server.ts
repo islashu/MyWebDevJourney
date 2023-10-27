@@ -4,11 +4,13 @@ const mongoose = require('mongoose');
 const PORT = process.env.PORT;
 const MONGO_URL = process.env.MONGO;
 const {createCustomLogger} = require('./util/loggers/customLogger');
-const userRoutes = require('./routes/userRoutes');
+const userRoutes = require('./routes/authRoutes');
 const passport = require('passport');
-const credentials = require('./middleware/credentials');
+const cookieParser = require('cookie-parser');
+const credentials = require('./middleware/credentials.middleware');
 const cors = require('cors');
 const corsOptions = require('./config/cors/corsOptions');
+const {errorHandlerMiddleware} = require('./middleware/errorHandler.middleware');
 
 /*
  * Node js is a waterfall approach
@@ -16,6 +18,9 @@ const corsOptions = require('./config/cors/corsOptions');
 
 // Connect to express framework
 const app = express();
+
+//middleware for cookies
+app.use(cookieParser());
 
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
@@ -28,7 +33,7 @@ app.use(cors(corsOptions));
 const customLogger = createCustomLogger('server', 'serverts-logs');
 
 // Configuration of passport strategy
-require('./models/user.model'); // Load the model first so that we can extract the user
+require('./models/user.model'); // Load the model first so that we can extract the auth
 require('./config/passport strategy/passportJWT')(passport); // initialise configuration of passport strategy class
 app.use(passport.initialize()); // Create the passport strategy object
 
@@ -36,8 +41,10 @@ app.use(passport.initialize()); // Create the passport strategy object
 app.use(express.json());
 
 // All routes
-app.use('/user', userRoutes);
+app.use('/auth', userRoutes);
 
+// Global error handler
+app.use(errorHandlerMiddleware);
 // Connect to mongoDB
 mongoose
     .connect(MONGO_URL)
