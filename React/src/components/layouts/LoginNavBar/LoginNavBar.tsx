@@ -1,9 +1,7 @@
-import React from 'react';
 import CustomButton from '../../CustomButton/CustomButton';
 import {Link} from 'react-router-dom';
 import {useReduxAuthSliceService} from '../../../redux/slices/auth/authSlice.service';
 import {useHttpAuth} from '../../../api/auth/auth.api';
-import {axiosPrivate} from '../../../api/config/axios';
 import useAxiosJwt from '../../../api/interceptor/useAxiosJwt';
 import {AuthTO} from '../../../model/auth.model';
 
@@ -42,7 +40,7 @@ const LoginNavBar = () => {
                     </span>
                 </>
             ) : (
-                <span>
+                <span className="flex justify-between gap-4 border border-solid border-black">
                     <Link to={'/login'}>
                         <span>Login</span>
                     </Link>

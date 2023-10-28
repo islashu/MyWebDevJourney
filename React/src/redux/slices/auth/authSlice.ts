@@ -1,4 +1,3 @@
-import {create} from 'axios';
 import {createSlice} from '@reduxjs/toolkit';
 
 /*

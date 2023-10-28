@@ -12,6 +12,7 @@ import {setAuthenticatedStatus, setAccessToken, setUserName, setRefreshToken} fr
  * */
 export const useReduxAuthSliceService = () => {
     const dispatch = useDispatch();
+    // @ts-ignore, Redux doesn't use types as it works with plain js objects
     const authSlice = useSelector((state) => state.authSlice);
 
     const setReduxAuthSliceIsAuthenticatedStatus = (bool: boolean) => {
@@ -57,7 +58,7 @@ export const useReduxAuthSliceService = () => {
         }
     };
 
-    const getReduxAuthSliceUsername = () => {
+    const getReduxAuthSliceUsername = (): string => {
         return authSlice.username;
     };
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import {Link, Outlet} from 'react-router-dom';
 import LoginNavBar from '../LoginNavBar/LoginNavBar';
 
@@ -11,7 +10,7 @@ import LoginNavBar from '../LoginNavBar/LoginNavBar';
 const NavBar = () => {
     return (
         <>
-            <nav>
+            <nav className="max-w-2xl mx-auto flex justify-between gap-3 text-2xl font-medium bg-amber-100">
                 <Link to={'/'}>
                     <span>Home</span>
                 </Link>

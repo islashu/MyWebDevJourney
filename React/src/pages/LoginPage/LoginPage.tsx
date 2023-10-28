@@ -51,31 +51,56 @@ const LoginPage = () => {
 
     return (
         <>
-            <form onSubmit={(event) => handleSubmit(event)}>
+            <form className=" flex flex-col max-w-2xl mx-auto relative p-6" onSubmit={(event) => handleSubmit(event)}>
                 {/* Always have a label, the id of the input must be the same as the html for*/}
-                <label htmlFor="username">Username: </label>
+                <label className="" htmlFor="username">
+                    Username:{' '}
+                </label>
                 {/*bind value to state so that we can clear it after submission*/}
                 {/*Ref allows use to move the screen of the auth to focus on something we want */}
-                <input type="text" id="username" ref={usernameRef} onChange={(e) => setUsername(e.target.value)} autoComplete="off" required />
+                <input
+                    className="border border-solid border-black"
+                    type="text"
+                    id="username"
+                    ref={usernameRef}
+                    onChange={(e) => setUsername(e.target.value)}
+                    autoComplete="off"
+                    required
+                />
                 <label htmlFor="password">Password: </label>
-                <input type="text" id="password" ref={passwordRef} onChange={(e) => setPassword(e.target.value)} autoComplete="off" required />
+                <input
+                    className="border border-solid border-black"
+                    type="text"
+                    id="password"
+                    ref={passwordRef}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="off"
+                    required
+                />
                 <label htmlFor="submit"></label>
-                <input disabled={isLoading} type="submit" />
+                <button className="bg-gray-200 hover:bg-gray-300 transition duration-300 ease-in-out text-xl font-bold m-4" type="submit">
+                    {' '}
+                    submit
+                </button>
             </form>
-            <button
-                onClick={() => {
-                    handleReduxUpdate();
-                }}
-            >
-                redux
-            </button>
-            <button
-                onClick={() => {
-                    handleProtectedSubmit();
-                }}
-            >
-                send via protected route
-            </button>
+            <div className="flex flex-col max-w-2xl mx-auto">
+                <button
+                    className="bg-sky-300 hover:bg-sky-500 transition duration-300 ease-in-out text-xl font-bold my-1"
+                    onClick={() => {
+                        handleReduxUpdate();
+                    }}
+                >
+                    redux
+                </button>
+                <button
+                    className="bg-sky-300 hover:bg-sky-500 transition duration-300 ease-in-out text-xl font-bold"
+                    onClick={() => {
+                        handleProtectedSubmit();
+                    }}
+                >
+                    send via protected route
+                </button>
+            </div>
         </>
     );
 };

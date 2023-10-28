@@ -27,8 +27,6 @@ export const useHttpAuth = () => {
     };
 
     const httpAuthLogin = async (authTO: AuthTO, controllerSignal?: AbortSignal) => {
-        console.log('http auth login');
-        console.log(authTO);
         return axios
             .post(
                 '/auth/login',
