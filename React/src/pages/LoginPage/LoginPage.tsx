@@ -30,7 +30,9 @@ const LoginPage = () => {
             } as AuthTO;
             const {accessToken, refreshToken} = await httpAuthLogin(authTO);
             // Store in redux
-            await setReduxAuthSlice(true, accessToken, refreshToken, username).then(navigate('/'));
+            await setReduxAuthSlice(true, accessToken, refreshToken, username).then((response) => {
+                navigate('/');
+            });
         } catch (err) {
             console.log(err);
         }

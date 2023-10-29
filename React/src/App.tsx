@@ -16,7 +16,7 @@ function App() {
                     <Route path="/" element={<HomePage />}></Route>
                     <Route path="/reference" element={<SideBar />}>
                         <Route index element={<ReferencePage />}></Route>
-                        <Route path="/reference/:tab" element={<ReferencePage />}></Route>
+                        <Route path="/reference/:SideBarTabProps" element={<ReferencePage />}></Route>
                     </Route>
                     <Route path="/login" element={<LoginPage />}></Route>
                     <Route path="/signup" element={<SignupPage />}></Route>

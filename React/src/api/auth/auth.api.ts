@@ -2,7 +2,7 @@ import axios from '../config/axios';
 import {AxiosResponse} from 'axios';
 import {useReduxAuthSliceService} from '../../redux/slices/auth/authSlice.service';
 import {useRef} from 'react';
-import {AuthTO} from '../../model/user.model';
+import {AuthTO} from '../../model/auth.model.ts';
 
 // interceptor imported form config automatically comes with BASE_URL appended
 
@@ -19,7 +19,7 @@ export const useHttpAuth = () => {
 
     const httpAuthRegister = async (authTO: AuthTO, controllerSignal?: AbortSignal) => {
         return axios
-            .post('/auth/register', {authTO: authTO, signal: controllerSignal})
+            .post('/auth/register', {authTO: authTO}, {signal: controllerSignal})
             .then()
             .catch((err) => {
                 console.log(err.response.data.message);
@@ -30,8 +30,9 @@ export const useHttpAuth = () => {
         return axios
             .post(
                 '/auth/login',
-                {authTO: authTO, signal: controllerSignal},
+                {authTO: authTO},
                 {
+                    signal: controllerSignal,
                     withCredentials: true // This allows cookies to work. IMPT!!
                 }
             )
@@ -52,7 +53,7 @@ export const useHttpAuth = () => {
      * */
     const httpAuthRefresh = async (authTO: AuthTO, controllerSignal?: AbortSignal): Promise<string | void> => {
         return axios
-            .post('/auth/refresh', {authTO: authTO, signal: controllerSignal})
+            .post('/auth/refresh', {authTO: authTO}, {signal: controllerSignal})
             .then((response) => {
                 // Typescript: we can do this to let the compiler know that we are returning a string type rather than returning the response.data.accessToken immediately
                 const data: string = response.data.accessToken;
@@ -66,7 +67,7 @@ export const useHttpAuth = () => {
 
     const httpAuthLogout = async (authTO: AuthTO, controllerSignal?: AbortSignal) => {
         return axios
-            .post('/auth/logout', {authTO: authTO, signal: controllerSignal})
+            .post('/auth/logout', {authTO: authTO}, {signal: controllerSignal})
             .then((response) => {
                 console.log(response.data);
             })

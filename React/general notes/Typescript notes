@@ -1,0 +1,46 @@
+ /* If you are wondering why is this so verbose, it is because of typescript where the exact types
+* must be perpetuated throughout all functions even null, void etc which java does not expects void or string
+* its mutually exclusive like void or string only. This is because of java nullpointer exception which auto covers this.
+* since useEffect expects a void, we need to create a function that return a void so we have to wrap
+* the entire function with another arrow function just so it stops complaining. There is no other
+* inherent value of doing this.
+*
+* This wrapper is known as a clean up function.
+* */
+
+
+useEffect(() => {
+        ----- wrapper clean up ------
+        return (): void => {
+        ----- wrapper clean up ------
+
+            // Insert function that you want to write
+        };
+    }, []);
+
+Alternatively
+
+useEffect(() => {
+
+        // write your own function and execute
+
+        // Do not touch this.
+        return (): void => {};
+    }, []);
+
+
+
+
+
+If you encounter a () => void
+    - wrap with a clean up function
+
+if you have a chain function and you do not want to return a void
+    - make sure that all chain functions return a non-void type value
+
+if you want to use an interface but a component also has the same name
+    - add "props" as suffix like SideBarTabProps
+
+TS2339: Property does not exist on type:
+    - Ensure that you are not deconstructing the props such as using {props}: type
+    - Ensure that you are taking in the correct types like [] vs other thing

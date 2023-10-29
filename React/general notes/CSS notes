@@ -10,6 +10,8 @@ flex-col - same as flex but now all elements are stack on top of one another, gr
 
 mx-auto - centering div automatically
     mx-auto, you will need to set the max-width of the container as it only work with fixed width
+        - max-w-2xl
+        - w-40
 
 Text is not affected by mx-auto as it is not a position block like div or span
     text-center to align the text center
