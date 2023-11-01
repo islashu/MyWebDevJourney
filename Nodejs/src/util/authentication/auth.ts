@@ -1,5 +1,5 @@
 import {UserDocument} from '../../models/user.model';
-import {JwtObject} from '../../models/jwt.model';
+import {JwtProps} from '../../models/jwt.model';
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -32,7 +32,7 @@ const validatePassword = async (plainTextPassword: string, hashedPassword: strin
  * // Store the following settings properly
  * */
 const issueAccessToken = (userFound: UserDocument, expiresIn?: number): string => {
-    const payload: JwtObject = {
+    const payload: JwtProps = {
         userInfo: {
             username: userFound.username
         }
@@ -51,7 +51,7 @@ const issueAccessToken = (userFound: UserDocument, expiresIn?: number): string =
  * if both token are the same, a new access token with a longer expiry date is provided.
  * */
 const issueRefreshToken = (foundUser: UserDocument, expiresIn?: number) => {
-    const payload: JwtObject = {
+    const payload: JwtProps = {
         userInfo: {
             username: foundUser.username
         }

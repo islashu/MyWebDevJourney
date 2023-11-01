@@ -1,0 +1,20 @@
+Yes, it may be confusing but the model folder will contain all declarations of what an entity looks like in accordance to clean code architecture
+
+## The moment a model has functional methods, methods with actual declaration and implementation
+it will no longer be in this far but will be separate
+
+A good example is like user.repository.ts, it is a repository that has methods that are functional and has implementation
+It is a class like a model but since it has an actual use case, it is not an entity but a working file
+
+Another example is like controllers which are classes as well but they have actual implementations
+
+The reason why there are described as classes is because of clean code architecture. This is primary an OOP concept and is design specifically for OOP
+Since JS / TS is a multi paradigm language, you will see some discrepancies but in PURE OOP languages, this will make a lot of sense.
+
+To allows clean code architecture, we need classes and interfaces to allow for dependency injection, inversion of control and decoupling
+
+It is just how it is and it will be confusing.
+
+In any case, follow the structure and you will be fine.
+
+

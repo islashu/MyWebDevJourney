@@ -1,32 +1,27 @@
-import {UserDocument} from '../models/user.model';
-const {User} = require('../models/user.model');
+import {User, UserDocument} from '../models/user.model';
+import {ResponseError} from '../models/error.model';
+import {UNAUTHORISED} from '../util/codes/response.code';
+import {UserDatabaseProps} from '../models/database.model';
 const {logger} = require('../util/loggers/defaultLogger');
 
-const getUniqueUserByUsername = async (name): Promise<UserDocument> => {
-    try {
-        return await User.findOne({username: name});
-    } catch (err) {
-        logger.info('Error with retrieving auth by username from database');
-        logger.info(err);
+export class UserDatabaseMongo implements UserDatabaseProps {
+    constructor() {}
+    async findById(id: string): Promise<UserDocument> {
+        const user: UserDocument = await User.findOne({id: id});
+        return user;
     }
-};
 
-const getUniqueUserByRefreshToken = async (fieldVal): Promise<UserDocument> => {
-    try {
-        return await User.findOne({refreshToken: fieldVal});
-    } catch (err) {
-        logger.info('Error with retrieving auth by username from database');
-        logger.info(err);
+    async save(user: any): Promise<void> {
+        await user.save();
     }
-};
 
-const saveUserIntoDB = async (user) => {
-    try {
-        return await user.save();
-    } catch (err) {
-        logger.info('Error with save auth by username from database');
-        logger.info(err);
+    // Specific interfaces methods
+    async findByUsername(username: string): Promise<UserDocument> {
+        const user: UserDocument = await User.findOne({username: username});
+        return user;
     }
-};
-
-module.exports = {getUniqueUserByUsername, saveUserIntoDB, getUniqueUserByRefreshToken};
+    async findByRefreshToken(refreshToken: string): Promise<UserDocument> {
+        const user: UserDocument = await User.findOne({refreshToken: refreshToken});
+        return user;
+    }
+}

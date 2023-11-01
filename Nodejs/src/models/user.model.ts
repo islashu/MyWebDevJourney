@@ -33,9 +33,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    email: {
+    emailAddress: {
         type: String,
-        unique: true,
+        // unique: true,
         lowercase: true
         // validate: {
         //     validator: (email) => validator.isValidEmail(email),
@@ -55,10 +55,10 @@ const userSchema = new mongoose.Schema({
 });
 
 /*
- * Exports the object User for usage.
+ * Exports the object UserProps for usage.
  * 1st parameter of the mongoose model function determines the collection name in mongoDB
  * 2nd parameter of the mongoose model function determines what columns will the collection have
  * */
-const User = mongoose.model('User', userSchema);
+export const User = mongoose.model('User', userSchema);
 
 module.exports = {User};

@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const PORT = process.env.PORT;
 const MONGO_URL = process.env.MONGO;
 const {createCustomLogger} = require('./util/loggers/customLogger');
-const userRoutes = require('./routes/authRoutes');
+import userRoutes = require('./routes/authRoutes');
+import tabsRoutes = require('./routes/tabsRoutes');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials.middleware');
@@ -42,6 +43,7 @@ app.use(express.json());
 
 // All routes
 app.use('/auth', userRoutes);
+app.use('/tabs', tabsRoutes);
 
 // Global error handler
 app.use(errorHandlerMiddleware);

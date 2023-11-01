@@ -1,128 +1,102 @@
 // import {UserDocument} from '../models/auth.model';
-import {UserDocument} from '../models/user.model';
-import {AuthTO} from '../models/auth.model';
+import {User, UserDocument} from '../models/user.model';
+import {AuthTO, AuthTOProps} from '../models/auth.model';
 import {BAD_REQUEST, CONFLICT, FORBIDDEN, INTERNAL_SERVER_ERROR, OK, UNAUTHORISED} from '../util/codes/response.code';
-import {JwtObject} from '../models/jwt.model';
+import {JwtProps} from '../models/jwt.model';
 import {NextFunction} from 'express';
 const authUtilis = require('../util/authentication/auth');
-const {User} = require('../models/user.model');
 const {createCustomLogger} = require('../util/loggers/customLogger');
 const logger = createCustomLogger('userController', 'user');
 const {validatePassword, issueAccessToken, issueRefreshToken} = require('../util/authentication/auth');
-const {getUniqueUserByUsername, saveUserIntoDB, getUniqueUserByRefreshToken} = require('../repository/user.repository');
 const jwt = require('jsonwebtoken');
-const {ResponseError} = require('../models/error.model');
-import {Request, Response} from 'express';
+import {ResponseError} from '../models/error.model';
+import {UserDatabaseProps} from '../models/database.model';
+import {AuthControllerProps} from '../models/interfaces/authController.model';
+import {authServiceRefreshToken} from '../services/authService';
 
-/*Contains the logic for the auth routes
- *
- * */
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
-/*
- *
- *
- * */
-const handleLogin = async (req: Request, res: Response, next: any) => {
-    try {
-        const authTO = req.body.authTO as AuthTO;
-        const username: string = authTO.username;
-        const password: string = authTO.password;
 
+export class AuthControllerHandler implements AuthControllerProps {
+    async handleLogin(username: string, password: string, db: UserDatabaseProps): Promise<AuthTOProps> {
         if (!username || !password) throw new ResponseError(BAD_REQUEST, 'Username and password is required');
 
-        const userFound: UserDocument = await getUniqueUserByUsername(username);
+        const userFound: UserDocument = await db.findByUsername(username);
         if (!userFound) throw new ResponseError(UNAUTHORISED, 'No user found with the provided login and password');
 
         const isMatch: boolean = await validatePassword(password, userFound.password);
+
+        const res = await User.updateMany({}, {$rename: {email: 'emailAddress'}}, {strict: false});
+        // const res = await User.find({}, 'email');
+        console.log(res);
 
         if (isMatch) {
             const accessToken = issueAccessToken(userFound, 5);
             const refreshToken = issueRefreshToken(userFound, 60 * 60 * 24);
             // Store auth refresh token in DB for later usage
             userFound.refreshToken = refreshToken;
-            await saveUserIntoDB(userFound);
-            res.json({accessToken, refreshToken});
+            await db.save(userFound);
+            // By doing this authTO interfaces completes the object for you.
+            const authTO: AuthTOProps = new AuthTO({accessToken: accessToken, refreshToken: refreshToken});
+
+            return authTO;
         } else {
             throw new ResponseError(UNAUTHORISED, 'Internal Server Error');
         }
-    } catch (err) {
-        next(err);
     }
-};
 
-/*
- *
- * */
-const handleRegister = async (req: Request, res: Response, next: any) => {
-    try {
-        const authTO = req.body.authTO as AuthTO;
-        const username: string = authTO.username;
-        const password: string = authTO.password;
-        const emailAddress: string = authTO.emailAddress;
-
+    async handleRegister(username: string, password: string, emailAddress: string, db: UserDatabaseProps): Promise<void> {
+        if (!username || !password || !emailAddress) throw new ResponseError(BAD_REQUEST, 'Username, password and email address is required');
         // Check if username already exist in DB
-        const duplicate = await getUniqueUserByUsername(username);
+        const duplicate: UserDocument = await db.findByUsername(username);
         if (duplicate) throw new ResponseError(CONFLICT, 'Username already exist!');
 
-        // Save in DB
-
-        // Create a new User Mongoose Model
+        // Create a new UserProps Mongoose Model
         const user = new User({
             username: username,
             password: await authUtilis.genHashPassword(password),
             emailAddress: emailAddress,
-            createdDT: new Date(),
-            updatedDT: new Date()
+            refreshToken: '',
+            createdDt: new Date(),
+            updatedDt: new Date()
         });
-        await saveUserIntoDB(user);
-        res.sendStatus(OK);
-    } catch (err) {
-        next(err);
+
+        await db.save(user);
     }
-};
 
-const handleRefreshToken = async (req: Request, res: Response, next: any) => {
-    try {
-        const authTO = req.body.authTO as AuthTO;
-        const refreshToken: string = authTO.refreshToken;
-
+    async handleRefreshToken(refreshToken: string, db: UserDatabaseProps): Promise<AuthTOProps> {
         if (!refreshToken) throw new ResponseError(UNAUTHORISED, 'Missing refresh token!');
-        const userFound: UserDocument = await getUniqueUserByRefreshToken(refreshToken);
+        const userFound: UserDocument = await db.findByRefreshToken(refreshToken);
         if (!userFound) throw new ResponseError(UNAUTHORISED, 'No user found with provided refresh token!');
 
-        // Evaluate refresh token before assign a new longer access token, jwt verify and then insert the object into the callback function as decoded in the callback function)
-        // We then take the callback function and compare it.
-        jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, decoded: JwtObject) => {
+        /*
+         1. Evaluate refresh token before assign a new longer access token, jwt verify and then insert the object into the callback function as decoded in the callback function)
+         2. We then take the callback function and compare it.
+        */
+        let response: AuthTOProps = {} as AuthTOProps;
+        await jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, async (err, decoded: JwtProps) => {
             if (err || userFound.username !== decoded.userInfo.username)
                 throw new ResponseError(FORBIDDEN, 'Token details are incorrect, token could have been tempered with!');
             const accessToken: string = issueAccessToken(userFound, 60 * 60 * 24);
-            console.log(accessToken);
-            res.json({accessToken});
             // Remove refresh token from DB
             userFound.refreshToken = '';
-            saveUserIntoDB(userFound);
+            await db.save(userFound);
+
+            const authTO: AuthTOProps = new AuthTO({accessToken: accessToken});
+            response = authTO;
         });
-    } catch (err) {
-        next(err);
+
+        return response;
     }
 
-    // Remove refresh token from DB
-};
-
-const handleLogout = async (req: Request, res: Response, next: any) => {
-    try {
-        const authTO = req.body.authTO as AuthTO;
-        const username: string = authTO.username;
-
+    async handleLogout(username: string, db: UserDatabaseProps): Promise<void> {
         if (!username) throw new ResponseError(BAD_REQUEST, 'Username is required to log out!');
-        const userFound: UserDocument = await getUniqueUserByUsername(username);
+        console.log('Logging out user: ' + username);
+        const userFound: UserDocument = await db.findByUsername(username);
+        console.log(userFound);
         userFound.refreshToken = '';
-        await saveUserIntoDB(userFound);
-        res.sendStatus(OK);
-    } catch (err) {
-        next(err);
+        await db.save(userFound);
     }
-};
 
-module.exports = {handleLogin, handleRegister, handleRefreshToken, handleLogout};
+    constructor() {}
+}

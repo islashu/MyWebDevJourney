@@ -1,0 +1,34 @@
+ // By doing this authTO interface completes the object for you.
+
+ export interface AuthTOProps {
+    firstName: string;
+    lastName: string;
+    emailAddress: string;
+    username: string;
+    password: string;
+    refreshToken: string;
+    accessToken: string;
+}
+
+I can't create an authTO object using = new authTO
+because authTO is an interface and not a class.
+
+// This is how you create an authTO object using the interface.
+const authTO: AuthTOProps = {
+    refreshToken: refreshToken,
+    accessToken: accessToken
+} as AuthTOProps
+
+
+
+In Java you can do this
+
+Animal tiger = new Tiger();
+
+This would be valid where the tiger is an animal object
+and you are creating it using the constructor of the Tiger class.
+
+but in typescript, this is not possible.
+
+How do you create an instance of something using the constructor of a class
+when the class is not a class but an interface?

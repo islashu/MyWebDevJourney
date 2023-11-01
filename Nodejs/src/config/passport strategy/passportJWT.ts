@@ -1,5 +1,6 @@
-import {JwtObject} from '../../models/jwt.model';
+import {JwtProps} from '../../models/jwt.model';
 import {UserDocument} from '../../models/user.model';
+import {UserDatabaseMongo} from '../../repository/user.repository';
 
 const {User, UserDocument} = require('../../models/user.model');
 require('dotenv').config();
@@ -27,7 +28,7 @@ const {getUniqueUserByUsername, saveUserIntoDB, getUniqueUserByRefreshToken} = r
  * Afterwards, the passport strategy requires the auth object to compare the jwttoken that it received from the request
  * It will perform an internal comparison and return a true or false with res.status
  *
- * To get the value of this comparison, use the middleware, passport strategy.authenticate('jwt', {session: false})
+ * To find the value of this comparison, use the middleware, passport strategy.authenticate('jwt', {session: false})
  * put this statement before the routes to perform the authentication
  *
  * The main reason why this is automatically triggered for all request is that passport strategy wants to give the developer flexibility
@@ -69,8 +70,9 @@ const strategy = new JwtStrategy(jwtOptions, async (decodedPayload, next) => {
     */
 
     //  ----------------------------------------------- Add custom verification here -----------------------------------------------
+    const userDatabase = new UserDatabaseMongo();
     const username = decodedPayload.userInfo.username;
-    const userFound: UserDocument = await getUniqueUserByUsername(username);
+    const userFound: UserDocument = await userDatabase.findByUsername(username);
     if (!userFound) {
         return next(null, false);
     } else {

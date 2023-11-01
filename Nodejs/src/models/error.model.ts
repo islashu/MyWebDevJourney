@@ -1,6 +1,6 @@
 /* Custom Error for configuring error for global error handler, errors using this must be a function and cannot be an arrow function*/
 
-function ResponseError(status: number, message: string) {
+export function ResponseError(status: number, message: string) {
     this.name = 'ResponseError';
     this.message = message || 'Internal Server Error 500';
     let error = new Error(this.message);
