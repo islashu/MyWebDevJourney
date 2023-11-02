@@ -2,7 +2,7 @@
  * Contains the different auth models for different processes such as authentication, registration etc
  * */
 
-export interface User {
+export interface UserProps {
     firstName: string;
     lastName: string;
     email: string;

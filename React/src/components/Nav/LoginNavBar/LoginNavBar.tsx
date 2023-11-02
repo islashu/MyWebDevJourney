@@ -1,9 +1,9 @@
-import CustomButton from '../../CustomButton/CustomButton';
+import CustomButton from '../../CustomButton/CustomButton.tsx';
 import {Link} from 'react-router-dom';
-import {useReduxAuthSliceService} from '../../../redux/slices/auth/authSlice.service';
-import {useHttpAuth} from '../../../api/auth/auth.api';
-import useAxiosJwt from '../../../api/interceptor/useAxiosJwt';
-import {AuthTO} from '../../../model/auth.model';
+import {useReduxAuthSliceService} from '../../../redux/slices/auth/authSlice.service.ts';
+import {useHttpAuth} from '../../../api/auth/auth.api.ts';
+import useAxiosJwt from '../../../api/config/interceptor/useAxiosJwt.ts';
+import {AuthTOProps} from '../../../model/auth.model.ts';
 
 const LoginNavBar = () => {
     const {getReduxAuthSliceIsUserAuthenticated, getReduxAuthSliceUsername, setReduxAuthSlice} = useReduxAuthSliceService();
@@ -14,10 +14,10 @@ const LoginNavBar = () => {
 
     const handleLogOut = async () => {
         // Provide username so BE can remove refreshToken if exist in the backend
-        const authTO = {username: username} as AuthTO;
+        const authTO = {username: username} as AuthTOProps;
         await httpAuthLogout(authTO);
         // Remove everything from redux
-        await setReduxAuthSlice(false, '', '', '');
+        await setReduxAuthSlice(false, '', '', '', false);
         // Reset header because the accessToken will still be tagged to it
         resetAxiosJwtHeaders();
     };

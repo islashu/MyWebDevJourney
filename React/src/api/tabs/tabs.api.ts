@@ -1,14 +1,17 @@
 import axios from '../config/axios';
-import {SideBarTabProps} from '../../model/tab.model.ts'; // We need to import explicit from the configuration file
+import {convertTabsTOJson, TabsDocumentProps} from '../../model/tab.model.ts'; // We need to import explicit from the configuration file
 /* All apis are custom hooks by design*/
 export const useHttpTabs = () => {
-    const httpTabsGetAllTabs = async (controllerSignal?: AbortSignal): Promise<SideBarTabProps[]> => {
+    const httpTabsGetTabs = async (controllerSignal?: AbortSignal): Promise<TabsDocumentProps[]> => {
         return await axios
-            .get('/tabs', {signal: controllerSignal})
+            .get('/tabs/getTabs', {signal: controllerSignal})
             .then((response) => {
                 // By doing this, we guarantee that the return value is not void, so we don't need to add a void to the types
-                const tabs: SideBarTabProps[] = response.data || [];
-                return tabs;
+                const tabsTOs: TabsDocumentProps[] = [];
+                response.data.tabsTOs.forEach((tabTO: TabsDocumentProps) => {
+                    tabsTOs.push(convertTabsTOJson(tabTO));
+                });
+                return tabsTOs || [];
             })
             .catch((err) => {
                 console.log(err);
@@ -17,5 +20,5 @@ export const useHttpTabs = () => {
             });
     };
 
-    return {httpTabsGetAllTabs};
+    return {httpTabsGetTabs};
 };

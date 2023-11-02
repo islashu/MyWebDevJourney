@@ -1,5 +1,5 @@
 import React from 'react';
-import SideBar from '../../components/layouts/Sidebar/SideBar.tsx';
+import SideBar from '../../components/Nav/Sidebar/SideBar.tsx';
 
 const ReferencePage = () => {
     return <>Reference page!</>;

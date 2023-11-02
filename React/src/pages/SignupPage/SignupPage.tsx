@@ -1,12 +1,14 @@
 import {useEffect, useRef, useState} from 'react';
 import {useHttpAuth} from '../../api/auth/auth.api';
-import {AuthTO} from '../../model/auth.model';
+import {AuthTO, AuthTOProps} from '../../model/auth.model';
+import {useNavigate} from 'react-router-dom';
 
 const USERNAME_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/;
 
 const SignupPage = () => {
+    const navigate = useNavigate();
     const usernameRef = useRef();
     const passwordRef = useRef();
     const errRef = useRef(null);
@@ -14,7 +16,6 @@ const SignupPage = () => {
     const confirmPasswordRef = useRef();
     const emailAddressRef = useRef();
     const {httpAuthRegister} = useHttpAuth();
-    const {isLoading, setIsLoading} = useState(false);
 
     const [username, setUsername] = useState('');
     const [isUsernameValid, setIsUsernameValid] = useState(false);
@@ -38,16 +39,15 @@ const SignupPage = () => {
         try {
             // prevent the page from reloading and unmounting the component when submitting the form (default html behaviour), this prevents state from being lost
             e.preventDefault();
-            setIsLoading(true);
             // Do something
-            const user = {
+            const user = new AuthTO({
                 username: username,
                 password: password,
                 emailAddress: emailAddress
-            } as unknown as AuthTO;
+            });
             // if error, display the error
             await httpAuthRegister(user);
-            setIsLoading(false);
+            navigate('/login');
         } catch (err) {
             setErrMsg('');
             errRef.current.focus;
@@ -84,7 +84,7 @@ const SignupPage = () => {
                     {errMsg}
                 </p>
                 <form className="items-left mx-auto flex max-w-2xl flex-col gap-4 " onSubmit={(event) => handleSubmit(event)}>
-                    {/* Always have a label, the id of the input must be the same as the html for*/}
+                    {/* Always have a label, the uuid of the input must be the same as the html for*/}
                     <label htmlFor="username" className={isUsernameValid ? '' : 'text-rose-700 font-bold'}>
                         Username:{' '}
                     </label>

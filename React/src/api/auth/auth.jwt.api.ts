@@ -1,5 +1,5 @@
-import useAxiosJwt from '../interceptor/useAxiosJwt';
-import axios from '../config/axios';
+import useAxiosJwt from '../config/interceptor/useAxiosJwt';
+import {AuthTOProps, convertAuthTOJson} from '../../model/auth.model.ts';
 
 /*
  * This file only contains http requests that require jwt authentication
@@ -16,7 +16,9 @@ export const useHttpAuthJwt = () => {
             .then(
                 // toast successfully registration
                 (response) => {
-                    console.log(response);
+                    console.log('response from protected route', response);
+                    const authTO: AuthTOProps = convertAuthTOJson(response.data);
+                    return authTO;
                 }
             )
             .catch((err) => {

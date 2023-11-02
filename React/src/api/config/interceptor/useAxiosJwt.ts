@@ -1,9 +1,9 @@
-import {axiosPrivate} from '../config/axios';
+import {axiosPrivate} from '../axios.ts';
 import {useEffect} from 'react';
-import {useReduxAuthSliceService} from '../../redux/slices/auth/authSlice.service';
-import {useHttpAuth} from '../auth/auth.api';
+import {useReduxAuthSliceService} from '../../../redux/slices/auth/authSlice.service.ts';
+import {useHttpAuth} from '../../auth/auth.api.ts';
 import {useSelector} from 'react-redux';
-import {AuthTO} from '../../model/auth.model';
+import {AuthTO, AuthTOProps} from '../../../model/auth.model.ts';
 import {AxiosResponse} from 'axios';
 
 const useAxiosJwt = () => {
@@ -53,7 +53,7 @@ const useAxiosJwt = () => {
                     prevRequest.sent = true;
                     // Received a new access token using refresh Token
                     const refreshToken = getReduxAuthSliceRefreshToken();
-                    const authTO = {refreshToken: refreshToken} as AuthTO;
+                    const authTO = new AuthTO({refreshToken: refreshToken});
                     /*Received a new access token using refresh Token*/
                     const newAccessToken: string | void = await httpAuthRefresh(authTO);
                     // Typescript: we can counteract the compiler from insisting that the methods below must take in a void as a type by doing this null check.

@@ -12,7 +12,8 @@ export const authSlice = createSlice({
         username: '',
         isAuthenticated: false,
         accessToken: '',
-        refreshToken: ''
+        refreshToken: '',
+        isAdmin: false
     },
     // This are the functions that can alter the state store in the books
     reducers: {
@@ -36,6 +37,9 @@ export const authSlice = createSlice({
         },
         setRefreshToken: (state, action) => {
             state.refreshToken = action.payload;
+        },
+        setIsAdmin: (state, action) => {
+            state.isAdmin = action.payload;
         }
     }
 });
@@ -43,4 +47,4 @@ export const authSlice = createSlice({
 // Redux: Exporting to the store, syntax = <slice>.reducer, there is no type, it is reducer not reducers as per their documentation
 export default authSlice.reducer;
 // Redux: Exporting individuals reducers in authSlice.reducers, ensure the syntax is called <slice>.actions
-export const {setAccessToken, setAuthenticatedStatus, setUserName, setRefreshToken} = authSlice.actions;
+export const {setAccessToken, setAuthenticatedStatus, setUserName, setRefreshToken, setIsAdmin} = authSlice.actions;

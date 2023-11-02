@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {useHttpAuth} from '../../api/auth/auth.api';
 import {useReduxAuthSliceService} from '../../redux/slices/auth/authSlice.service';
 import {useHttpAuthJwt} from '../../api/auth/auth.jwt.api';
-import {AuthTO} from '../../model/auth.model';
+import {AuthTO, AuthTOProps} from '../../model/auth.model';
 
 const LoginPage = () => {
     const usernameRef = useRef();
@@ -24,13 +24,10 @@ const LoginPage = () => {
         // send login information as http request to BE
         try {
             // Get back an accessToken and a refreshToken to store in redux
-            const authTO = {
-                username: username,
-                password: password
-            } as AuthTO;
+            const authTO: AuthTOProps = new AuthTO({username: username, password: password});
             const {accessToken, refreshToken} = await httpAuthLogin(authTO);
             // Store in redux
-            await setReduxAuthSlice(true, accessToken, refreshToken, username).then((response) => {
+            await setReduxAuthSlice(true, accessToken, refreshToken, username, true).then((response) => {
                 navigate('/');
             });
         } catch (err) {
@@ -54,7 +51,7 @@ const LoginPage = () => {
     return (
         <>
             <form className=" flex flex-col max-w-2xl mx-auto relative p-6" onSubmit={(event) => handleSubmit(event)}>
-                {/* Always have a label, the id of the input must be the same as the html for*/}
+                {/* Always have a label, the uuid of the input must be the same as the html for*/}
                 <label className="" htmlFor="username">
                     Username:{' '}
                 </label>

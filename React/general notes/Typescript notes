@@ -39,7 +39,7 @@ if you have a chain function and you do not want to return a void
     - make sure that all chain functions return a non-void type value
 
 if you want to use an interface but a component also has the same name
-    - add "props" as suffix like SideBarTabProps
+    - add "props" as suffix like TabsDocumentProps
 
 TS2339: Property does not exist on type:
     - Ensure that you are not deconstructing the props such as using {props}: type

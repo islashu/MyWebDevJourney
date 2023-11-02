@@ -25,6 +25,28 @@ we need to pass down the error to trigger the try catch block in another place.
 
 
 // Do we want the httplogin user to interact with redux or do you want to do it in the login page??
-we will perform all the necessary actions in the loginpage because from a new comer, the logic thing to find all the login logic
+we will perform all the necessary actions in the loginpage because from a new comer, the logic thing to findAllTabs all the login logic
 is in the login page as opposed to the auth api
 like in angular where we only access the service when we want to post things out
+
+
+
+// There are always libraries that you will discover that improves your coding experience
+like yup, the question is to implement it in the normal react way or the lib way?
+
+we will do it the normal way and implement with new libraries in the future once we are comfortable with react
+
+
+
+// Clean appearing code by abstracting the components into render functions
+// Abstracting halfway will make it very untidy but if you do not abstract, it gets very very long winded
+// Find a way to abstract all the html div, sections and abstract the functions
+
+// keep the final render very short so it gives an overview
+// not all functions has to have its own render functions, as it would be too abstracted. rather keep render functions for mapping
+// a good way to see is to use, https://github.com/radzionc/reactkit/blob/main/package.json, his abstractions are very good
+
+
+
+// Everything i update the auth property, i have to change the code in multiple different places
+// authSlice.service, authslice.ts, loginPage, loginNavPage

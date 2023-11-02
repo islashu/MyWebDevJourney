@@ -8,7 +8,7 @@ const AuthContext = createContext({});
 export const AuthProvider = ({ children }) => {
 
     // Another way to store auth instead of redux
-    const [auth, setAuth] = useState<User>(new User("","","",""));
+    const [auth, setAuth] = useState<UserProps>(new UserProps("","","",""));
     return (
         <AuthContext.Provider value={{ auth, setAuth }}>
             {children}

@@ -1,5 +1,5 @@
 import {Link, Outlet} from 'react-router-dom';
-import LoginNavBar from '../LoginNavBar/LoginNavBar';
+import LoginNavBar from '../LoginNavBar/LoginNavBar.tsx';
 
 /*We are not going to dynamically load the navbar items as an array as there is no need for it.
  * It complicates the structure as well

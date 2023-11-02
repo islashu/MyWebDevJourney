@@ -1,10 +1,10 @@
 import {useDispatch, useSelector} from 'react-redux';
-import {setAuthenticatedStatus, setAccessToken, setUserName, setRefreshToken} from './authSlice';
+import {setAuthenticatedStatus, setAccessToken, setUserName, setRefreshToken, setIsAdmin} from './authSlice';
 
-/* By using this, you will get access to a bunch of helper functions that access redux
- *  This acts as a middleware between components <-> middleware <-> redux
+/* By using this, you will findAllTabs access to a bunch of helper functions that access redux
+ *  This acts as a middlewares between components <-> middlewares <-> redux
  *
- * All setter methods to start with set and or getter methods to start with get
+ * All setter methods to start with set and or getter methods to start with findAllTabs
  * all methods to contain the word redux so we know that we are accessing redux
  * All methods to indicate the slice that they are accessing
  *
@@ -47,12 +47,21 @@ export const useReduxAuthSliceService = () => {
         }
     };
 
-    const setReduxAuthSlice = async (bool: boolean, accessToken: string, refreshToken: string, username: string) => {
+    const setReduxAuthSliceIsAdmin = (adminStatus: boolean) => {
+        try {
+            dispatch(setIsAdmin(adminStatus));
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const setReduxAuthSlice = async (bool: boolean, accessToken: string, refreshToken: string, username: string, adminStatus: boolean) => {
         try {
             setReduxAuthSliceIsAuthenticatedStatus(bool);
             setReduxAuthSliceAccessToken(accessToken);
             setReduxAuthSliceUsername(username);
             setReduxAuthSliceRefreshToken(refreshToken);
+            setReduxAuthSliceIsAdmin(adminStatus);
         } catch (err) {
             console.log(err);
         }
@@ -78,6 +87,9 @@ export const useReduxAuthSliceService = () => {
     const getReduxAuthSlice = () => {
         return authSlice;
     };
+    const getReduxAuthSliceIsAdmin = () => {
+        return authSlice.isAdmin;
+    };
 
     return {
         setReduxAuthSlice,
@@ -85,10 +97,12 @@ export const useReduxAuthSliceService = () => {
         setReduxAuthSliceAccessToken,
         setReduxAuthSliceIsAuthenticatedStatus,
         setReduxAuthSliceRefreshToken,
+        setReduxAuthSliceIsAdmin,
         getReduxAuthSliceUsername,
         getReduxAuthSliceRefreshToken,
         getReduxAuthSlice,
         getReduxAuthSliceAccessToken,
-        getReduxAuthSliceIsUserAuthenticated
+        getReduxAuthSliceIsUserAuthenticated,
+        getReduxAuthSliceIsAdmin
     };
 };

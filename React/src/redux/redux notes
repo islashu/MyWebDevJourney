@@ -7,7 +7,7 @@ Please use redux toolkit to reduce the amount of boilerplate code.
 
 
 
-To get the value from redux
+To findAllTabs the value from redux
 
 // Getting the value from redux, we are currently getting the entire userObject. Syntax = <name of slice in store>.<specific property in initial state>
     const user = useSelector((state) => state.authSlice);
