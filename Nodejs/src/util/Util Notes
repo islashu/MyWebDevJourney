@@ -1,4 +1,4 @@
-You will find out that in util, as of now, will not be adjusted to the clean code architecture
+You will findAllTabs out that in util, as of now, will not be adjusted to the clean code architecture
 because it is very likely that it will not change.
 
 But in the future if multiple type of validators, we will create the necessary clean code structure

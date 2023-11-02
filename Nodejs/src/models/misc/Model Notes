@@ -18,3 +18,14 @@ It is just how it is and it will be confusing.
 In any case, follow the structure and you will be fine.
 
 
+We are also going to follow the getters and setters technique in typescript because it gives us the advantage of adding conditions to our getters
+and setters before returning a value which is going to be useful for checking
+
+
+It is going to be more verbose but i think its for the better
+Do take note that now all the variable names will start with _ so becareful when you are using them and setting them
+
+A good way is just to convert to a certain class first and then use the class methods to set the values rather than accessing it when you receive as JSON
+or else its going to have alot of issues.
+
+

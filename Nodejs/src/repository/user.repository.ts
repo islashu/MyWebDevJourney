@@ -1,13 +1,10 @@
-import {User, UserDocument} from '../models/user.model';
-import {ResponseError} from '../models/error.model';
-import {UNAUTHORISED} from '../util/codes/response.code';
-import {UserDatabaseProps} from '../models/database.model';
-const {logger} = require('../util/loggers/defaultLogger');
+import {User, UserDocumentProps} from '../models/user.model';
+import {UserRepositoryProps} from '../models/database/userRepository.model';
 
-export class UserDatabaseMongo implements UserDatabaseProps {
+export class UserDatabaseMongo implements UserRepositoryProps {
     constructor() {}
-    async findById(id: string): Promise<UserDocument> {
-        const user: UserDocument = await User.findOne({id: id});
+    async findByUuid(uuid: string): Promise<UserDocumentProps> {
+        const user: UserDocumentProps = await User.findOne({uuid: uuid});
         return user;
     }
 
@@ -15,13 +12,13 @@ export class UserDatabaseMongo implements UserDatabaseProps {
         await user.save();
     }
 
-    // Specific interfaces methods
-    async findByUsername(username: string): Promise<UserDocument> {
-        const user: UserDocument = await User.findOne({username: username});
+    // Specific controller methods
+    async findByUsername(username: string): Promise<UserDocumentProps> {
+        const user: UserDocumentProps = await User.findOne({username: username});
         return user;
     }
-    async findByRefreshToken(refreshToken: string): Promise<UserDocument> {
-        const user: UserDocument = await User.findOne({refreshToken: refreshToken});
+    async findByRefreshToken(refreshToken: string): Promise<UserDocumentProps> {
+        const user: UserDocumentProps = await User.findOne({refreshToken: refreshToken});
         return user;
     }
 }

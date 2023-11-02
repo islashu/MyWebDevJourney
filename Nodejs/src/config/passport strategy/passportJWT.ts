@@ -1,8 +1,8 @@
 import {JwtProps} from '../../models/jwt.model';
-import {UserDocument} from '../../models/user.model';
+import {UserDocumentProps} from '../../models/user.model';
 import {UserDatabaseMongo} from '../../repository/user.repository';
 
-const {User, UserDocument} = require('../../models/user.model');
+const {User, UserDocumentProps} = require('../../models/user.model');
 require('dotenv').config();
 const passport = require('passport');
 const passportJWT = require('passport-jwt');
@@ -28,7 +28,7 @@ const {getUniqueUserByUsername, saveUserIntoDB, getUniqueUserByRefreshToken} = r
  * Afterwards, the passport strategy requires the auth object to compare the jwttoken that it received from the request
  * It will perform an internal comparison and return a true or false with res.status
  *
- * To find the value of this comparison, use the middleware, passport strategy.authenticate('jwt', {session: false})
+ * To findAllTabs the value of this comparison, use the middlewares, passport strategy.authenticate('jwt', {session: false})
  * put this statement before the routes to perform the authentication
  *
  * The main reason why this is automatically triggered for all request is that passport strategy wants to give the developer flexibility
@@ -36,7 +36,7 @@ const {getUniqueUserByUsername, saveUserIntoDB, getUniqueUserByRefreshToken} = r
  * the resources is gated behind an account.
  *
  * Note that passport strategy does not issue a JWT, or refresh token, create your auth for you, it does not even attached the jwt token to your header.
- * You have to do this yourself. The passport strategy only authenticates existing tokens which means that the first login you will have to issue a JWT token before you can run the passport strategy authenticate middleware
+ * You have to do this yourself. The passport strategy only authenticates existing tokens which means that the first login you will have to issue a JWT token before you can run the passport strategy authenticate middlewares
  * This is all define by the developer and their own ways. passport strategy just authenticates based on a certain requirement and simply return yes or no to proceed forward.
  *
  * */
@@ -72,7 +72,7 @@ const strategy = new JwtStrategy(jwtOptions, async (decodedPayload, next) => {
     //  ----------------------------------------------- Add custom verification here -----------------------------------------------
     const userDatabase = new UserDatabaseMongo();
     const username = decodedPayload.userInfo.username;
-    const userFound: UserDocument = await userDatabase.findByUsername(username);
+    const userFound: UserDocumentProps = await userDatabase.findByUsername(username);
     if (!userFound) {
         return next(null, false);
     } else {

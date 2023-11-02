@@ -8,10 +8,10 @@ import userRoutes = require('./routes/authRoutes');
 import tabsRoutes = require('./routes/tabsRoutes');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
-const credentials = require('./middleware/credentials.middleware');
+const credentials = require('./middlewares/credentials.middleware');
 const cors = require('cors');
 const corsOptions = require('./config/cors/corsOptions');
-const {errorHandlerMiddleware} = require('./middleware/errorHandler.middleware');
+const {errorHandlerMiddleware} = require('./middlewares/errorHandler.middleware');
 
 /*
  * Node js is a waterfall approach
@@ -20,7 +20,7 @@ const {errorHandlerMiddleware} = require('./middleware/errorHandler.middleware')
 // Connect to express framework
 const app = express();
 
-//middleware for cookies
+//middlewares for cookies
 app.use(cookieParser());
 
 // Handle options credentials check - before CORS!

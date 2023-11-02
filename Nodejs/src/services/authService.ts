@@ -1,30 +1,32 @@
 import {Request, Response} from 'express';
-import {AuthTOProps} from '../models/auth.model';
-import {AuthControllerHandler} from '../controllers/authController';
-import {AuthControllerProps} from '../models/interfaces/authController.model';
-import {UserDatabaseProps} from '../models/database.model';
-import {UserDatabaseMongo} from '../repository/user.repository';
+import {AuthTO, AuthTOProps, convertAuthTOJson} from '../models/auth.model';
+import {AuthControllerProps} from '../models/controller/authController.model';
+import {UserRepositoryProps} from '../models/database/userRepository.model';
 import {ResponseError} from '../models/error.model';
 import {INTERNAL_SERVER_ERROR, OK, UNAUTHORISED} from '../util/codes/response.code';
 
-// Pseudo DI this handler into the functions because we can't DI into it directly yet
+/*
+ * Note that It is the authService that is responsible for convert the data to a new authTO object.
+ * The handlers should only provide the data for the above.
+ * Single responsibility principle.
+ * */
 
 export const authServiceLogin = async (
     req: Request,
     res: Response,
     next: any,
     authController: AuthControllerProps,
-    userDatabase: UserDatabaseProps
+    userRepository: UserRepositoryProps
 ) => {
     try {
-        const {username, password}: {username: string; password: string} = req.body.authTO as AuthTOProps;
-        console.log(username);
-        const authResponseTO: AuthTOProps = await authController.handleLogin(username, password, userDatabase);
-        console.log(authResponseTO);
-        if (!authResponseTO) throw new ResponseError(INTERNAL_SERVER_ERROR, 'Internal Server Error!');
-        res.json(authResponseTO);
+        const {username, password}: {username: string; password: string} = convertAuthTOJson(req.body.authTO) as AuthTOProps;
+        const {accessToken, refreshToken}: AuthTOProps = await authController.handleLogin(username, password, userRepository);
+        if (!accessToken || !refreshToken) throw new ResponseError(INTERNAL_SERVER_ERROR, 'Internal Server Error!');
+        const authTO: AuthTOProps = new AuthTO({accessToken: accessToken, refreshToken: refreshToken});
+        console.log('authResponseTO', authTO);
+        res.json(authTO);
     } catch (err) {
-        // Error handler middleware will take care of it.
+        // Error handler middlewares will take care of it.
         next(err);
     }
 };
@@ -34,16 +36,16 @@ export const authServiceRegister = async (
     res: Response,
     next: any,
     authController: AuthControllerProps,
-    userDatabase: UserDatabaseProps
+    userRepository: UserRepositoryProps
 ) => {
     try {
-        console.log('authServiceRegister');
-        console.log(req.body);
-        const {username, password, emailAddress}: {username: string; password: string; emailAddress: string} = req.body.authTO as AuthTOProps;
-        await authController.handleRegister(username, password, emailAddress, userDatabase);
+        const {username, password, emailAddress}: {username: string; password: string; emailAddress: string} = convertAuthTOJson(
+            req.body.authTO
+        ) as AuthTOProps;
+        await authController.handleRegister(username, password, emailAddress, userRepository);
         res.sendStatus(OK);
     } catch (err) {
-        // Error handler middleware will take care of it.
+        // Error handler middlewares will take care of it.
         next(err);
     }
 };
@@ -53,15 +55,16 @@ export const authServiceRefreshToken = async (
     res: Response,
     next: any,
     authController: AuthControllerProps,
-    userDatabase: UserDatabaseProps
+    userRepository: UserRepositoryProps
 ) => {
     try {
-        const {refreshToken}: {refreshToken: string} = req.body.authTO as AuthTOProps;
-        const authResponseTO: AuthTOProps = await authController.handleRefreshToken(refreshToken, userDatabase);
-        if (!authResponseTO) throw new ResponseError(UNAUTHORISED, 'Internal Server Error!');
-        res.json(authResponseTO);
+        const {refreshToken}: {refreshToken: string} = convertAuthTOJson(req.body.authTO) as AuthTOProps;
+        const newAccessToken: string = await authController.handleRefreshToken(refreshToken, userRepository);
+        if (!newAccessToken) throw new ResponseError(UNAUTHORISED, 'Internal Server Error!');
+        const authTO: AuthTOProps = new AuthTO({accessToken: newAccessToken});
+        res.json(authTO);
     } catch (err) {
-        // Error handler middleware will take care of it.
+        // Error handler middlewares will take care of it.
         next(err);
     }
 };
@@ -71,14 +74,14 @@ export const authServiceLogout = async (
     res: Response,
     next: any,
     authController: AuthControllerProps,
-    userDatabase: UserDatabaseProps
+    userRepository: UserRepositoryProps
 ) => {
     try {
-        const {username}: {username: string} = req.body.authTO as AuthTOProps;
-        await authController.handleLogout(username, userDatabase);
+        const {username}: {username: string} = convertAuthTOJson(req.body.authTO) as AuthTOProps;
+        await authController.handleLogout(username, userRepository);
         res.sendStatus(OK);
     } catch (err) {
-        // Error handler middleware will take care of it.
+        // Error handler middlewares will take care of it.
         next(err);
     }
 };

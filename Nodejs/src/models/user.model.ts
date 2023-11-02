@@ -14,7 +14,8 @@ const validator = require('../util/forms/form.validators');
  * */
 
 // Pure for typings in typescript
-export interface UserDocument {
+export interface UserDocumentProps {
+    uuid?: string;
     username: string;
     password: string;
     emailAddress: string;
@@ -23,8 +24,93 @@ export interface UserDocument {
     updatedDT: Date;
 }
 
+export class UserDocument {
+    private _uuid?: string;
+    private _username: string;
+    private _password: string;
+    private _emailAddress: string;
+    private _refreshToken: string;
+    private _createdDT: Date;
+    private _updatedDT: Date;
+
+    constructor(obj: {
+        uuid?: string;
+        username?: string;
+        password?: string;
+        emailAddress?: string;
+        refreshToken?: string;
+        createdDT?: Date;
+        updatedDT?: Date;
+    }) {
+        this._uuid = obj.uuid || '';
+        this._username = obj.username || '';
+        this._password = obj.password || '';
+        this._emailAddress = obj.emailAddress || '';
+        this._refreshToken = obj.refreshToken || '';
+        this._createdDT = obj.createdDT || new Date();
+        this._updatedDT = obj.updatedDT || new Date();
+    }
+
+    get uuid(): string {
+        return this._uuid;
+    }
+
+    set uuid(value: string) {
+        this._uuid = value;
+    }
+
+    get username(): string {
+        return this._username;
+    }
+
+    get password(): string {
+        return this._password;
+    }
+
+    set password(value: string) {
+        this._password = value;
+    }
+
+    get emailAddress(): string {
+        return this._emailAddress;
+    }
+
+    set emailAddress(value: string) {
+        this._emailAddress = value;
+    }
+
+    get refreshToken(): string {
+        return this._refreshToken;
+    }
+
+    set refreshToken(value: string) {
+        this._refreshToken = value;
+    }
+
+    get createdDT(): Date {
+        return this._createdDT;
+    }
+
+    set createdDT(value: Date) {
+        this._createdDT = value;
+    }
+
+    get updatedDT(): Date {
+        return this._updatedDT;
+    }
+
+    set updatedDT(value: Date) {
+        this._updatedDT = value;
+    }
+}
+
 // The collections/table created in mongoDB is dependent this, this will also contain other attributes to better check for certain properties like "required"
 const userSchema = new mongoose.Schema({
+    uuid: {
+        type: String,
+        unique: true,
+        immutable: true
+    },
     username: {
         type: String,
         required: true
@@ -35,7 +121,7 @@ const userSchema = new mongoose.Schema({
     },
     emailAddress: {
         type: String,
-        // unique: true,
+        unique: true,
         lowercase: true
         // validate: {
         //     validator: (email) => validator.isValidEmail(email),

@@ -1,4 +1,4 @@
-import {UserDocument} from '../../models/user.model';
+import {UserDocumentProps} from '../../models/user.model';
 import {JwtProps} from '../../models/jwt.model';
 
 const bcrypt = require('bcrypt');
@@ -31,7 +31,7 @@ const validatePassword = async (plainTextPassword: string, hashedPassword: strin
  *
  * // Store the following settings properly
  * */
-const issueAccessToken = (userFound: UserDocument, expiresIn?: number): string => {
+const issueAccessToken = (userFound: UserDocumentProps, expiresIn?: number): string => {
     const payload: JwtProps = {
         userInfo: {
             username: userFound.username
@@ -50,7 +50,7 @@ const issueAccessToken = (userFound: UserDocument, expiresIn?: number): string =
  * When the first access token expires, the auth will provide the refresh token and the server will compare the refresh token in the DB
  * if both token are the same, a new access token with a longer expiry date is provided.
  * */
-const issueRefreshToken = (foundUser: UserDocument, expiresIn?: number) => {
+const issueRefreshToken = (foundUser: UserDocumentProps, expiresIn?: number) => {
     const payload: JwtProps = {
         userInfo: {
             username: foundUser.username

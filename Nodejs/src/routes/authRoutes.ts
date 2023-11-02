@@ -1,15 +1,13 @@
-import {testMiddleware} from '../middleware/test.middleware';
-import {authErrorHandlerMiddleware} from '../middleware/authErrorHandler.middleware';
+import {authErrorHandlerMiddleware} from '../middlewares/authErrorHandler.middleware';
 import {authServiceLogin, authServiceLogout, authServiceRefreshToken, authServiceRegister} from '../services/authService';
-import {AuthControllerProps} from '../models/interfaces/authController.model';
-import {AuthControllerHandler} from '../controllers/authController';
+import {AuthControllerProps} from '../models/controller/authController.model';
+import {AuthControllerHandler} from '../controllers/authControllerHandler';
 import {Request, Response} from 'express';
-import {UserDatabaseProps} from '../models/database.model';
+import {UserRepositoryProps} from '../models/database/userRepository.model';
 import {UserDatabaseMongo} from '../repository/user.repository';
 
 const express = require('express');
 const router = express.Router();
-const {handleLogin, handleRegister, handleRefreshToken, handleLogout} = require('../controllers/authController');
 const passport = require('passport');
 
 /*
@@ -35,21 +33,21 @@ const passport = require('passport');
  * The issue is that as the project grows, your methods will contain alot of DI which is going to be very messy
  *  */
 const authControllerHandler: AuthControllerProps = new AuthControllerHandler();
-const userDatabase: UserDatabaseProps = new UserDatabaseMongo();
+const userRepositoryMongo: UserRepositoryProps = new UserDatabaseMongo();
 router.post('/login', (req: Request, res: Response, next: any) => {
-    return authServiceLogin(req, res, next, authControllerHandler, userDatabase);
+    return authServiceLogin(req, res, next, authControllerHandler, userRepositoryMongo);
 });
 
 router.post('/register', (req: Request, res: Response, next: any) => {
-    return authServiceRegister(req, res, next, authControllerHandler, userDatabase);
+    return authServiceRegister(req, res, next, authControllerHandler, userRepositoryMongo);
 });
 
 router.post('/refresh', (req: Request, res: Response, next: any) => {
-    return authServiceRefreshToken(req, res, next, authControllerHandler, userDatabase);
+    return authServiceRefreshToken(req, res, next, authControllerHandler, userRepositoryMongo);
 });
 
 router.post('/logout', (req: Request, res: Response, next: any) => {
-    return authServiceLogout(req, res, next, authControllerHandler, userDatabase);
+    return authServiceLogout(req, res, next, authControllerHandler, userRepositoryMongo);
 });
 
 // Test route: This work if you include the bearer
