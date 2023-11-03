@@ -1,6 +1,7 @@
 import {JwtProps} from '../../models/jwt.model';
 import {UserDocumentProps} from '../../models/user.model';
-import {UserDatabaseMongo} from '../../repository/user.repository';
+import {UserRepositoryMongo} from '../../repository/user.repository';
+import {UserRepositoryProps} from '../../models/database/userRepository.model';
 
 const {User, UserDocumentProps} = require('../../models/user.model');
 require('dotenv').config();
@@ -9,7 +10,6 @@ const passportJWT = require('passport-jwt');
 // If you every have an error recognising this in your IDE, npm i @types/passportJWT-jwt --D
 const JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
-const {getUniqueUserByUsername, saveUserIntoDB, getUniqueUserByRefreshToken} = require('../../repository/user.repository');
 
 /*
  * Passport documentation is not good. Don't refer to that. This file's purpose is to configure/transform the passportObj
@@ -57,6 +57,8 @@ const jwtOptions = {
  * What goes on in JWT Strategy is that it performs JWT checking by comparing the signed version with the incoming JWT token
  * Which if not for this lib, we will have to manually do it,
  * */
+const userDatabase: UserRepositoryProps = new UserRepositoryMongo();
+
 const strategy = new JwtStrategy(jwtOptions, async (decodedPayload, next) => {
     /*
      IMPT!!
@@ -70,7 +72,7 @@ const strategy = new JwtStrategy(jwtOptions, async (decodedPayload, next) => {
     */
 
     //  ----------------------------------------------- Add custom verification here -----------------------------------------------
-    const userDatabase = new UserDatabaseMongo();
+    console.log('decodedPayload', decodedPayload);
     const username = decodedPayload.userInfo.username;
     const userFound: UserDocumentProps = await userDatabase.findByUsername(username);
     if (!userFound) {

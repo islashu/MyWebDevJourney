@@ -4,7 +4,7 @@ import {AuthControllerProps} from '../models/controller/authController.model';
 import {AuthControllerHandler} from '../controllers/authControllerHandler';
 import {Request, Response} from 'express';
 import {UserRepositoryProps} from '../models/database/userRepository.model';
-import {UserDatabaseMongo} from '../repository/user.repository';
+import {UserRepositoryMongo} from '../repository/user.repository';
 
 const express = require('express');
 const router = express.Router();
@@ -33,7 +33,7 @@ const passport = require('passport');
  * The issue is that as the project grows, your methods will contain alot of DI which is going to be very messy
  *  */
 const authControllerHandler: AuthControllerProps = new AuthControllerHandler();
-const userRepositoryMongo: UserRepositoryProps = new UserDatabaseMongo();
+const userRepositoryMongo: UserRepositoryProps = new UserRepositoryMongo();
 router.post('/login', (req: Request, res: Response, next: any) => {
     return authServiceLogin(req, res, next, authControllerHandler, userRepositoryMongo);
 });

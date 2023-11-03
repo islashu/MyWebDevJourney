@@ -17,10 +17,8 @@ export const tabServiceGetTabs = async (
         const tabsTOs = [];
 
         tabs.forEach((tab: TabsDocumentProps) => {
-            console.log('tabs', tab);
             tabsTOs.push(new TabsTO(tab));
         });
-        console.log('response', tabsTOs);
         res.json({tabsTOs});
     } catch (err) {
         next(err);

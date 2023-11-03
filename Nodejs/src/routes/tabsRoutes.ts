@@ -28,6 +28,7 @@ router.put(
     '/update',
     [passport.authenticate('jwt', {session: false, failWithError: true}), authErrorHandlerMiddleware],
     (req: Request, res: Response, next: any) => {
+        console.log('update');
         return tabServiceUpdateTab(req, res, next, tabControllerHandler, TabRepositoryMongo);
     }
 );

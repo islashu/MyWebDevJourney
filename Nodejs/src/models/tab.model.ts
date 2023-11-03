@@ -143,11 +143,6 @@ const tabSchema = new mongoose.Schema({
     },
     childTabs: [
         {
-            uuid: {
-                type: String,
-                unique: true,
-                immutable: true
-            },
             name: {
                 type: String
             },

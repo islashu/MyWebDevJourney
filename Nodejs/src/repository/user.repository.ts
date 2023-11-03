@@ -1,7 +1,7 @@
 import {User, UserDocumentProps} from '../models/user.model';
 import {UserRepositoryProps} from '../models/database/userRepository.model';
 
-export class UserDatabaseMongo implements UserRepositoryProps {
+export class UserRepositoryMongo implements UserRepositoryProps {
     constructor() {}
     async findByUuid(uuid: string): Promise<UserDocumentProps> {
         const user: UserDocumentProps = await User.findOne({uuid: uuid});
