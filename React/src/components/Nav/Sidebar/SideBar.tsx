@@ -8,11 +8,13 @@ import SideBarAddNewTab from './SideBarAddNewTab.tsx';
 import SideBarEditButton from './SideBarEditButton.tsx';
 import SideBarDeleteButton from './SideBarDeleteButton.tsx';
 import {useReduxAuthSliceService} from '../../../redux/slices/auth/authSlice.service.ts';
+import {useRightsValidator} from '../../../hooks/useRightsValidator.ts';
 /*
  * For this to exist along side every other component, you have to use an outlet
  * */
 const SideBar = () => {
     const {httpTabsGetTabs} = useHttpTabs();
+    const {validateSideBarAccess, validateIsAdmin} = useRightsValidator();
 
     const usernameRef = useRef();
 
@@ -20,35 +22,29 @@ const SideBar = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
-    const {getReduxAuthSliceIsAdmin} = useReduxAuthSliceService();
-    const isAdmin = getReduxAuthSliceIsAdmin();
-
     // Get Tabs Data via HTTP
     useEffect(() => {
-        // console.log('useEffect');
-        // console.log(tabs);
-        // let isMounted = true;
-        // const controller = new AbortController();
-        // const getTabs = async () => {
-        //     try {
-        //         await httpTabsGetTabs(controller.signal).then((response: TabsDocumentProps[]): void => {
-        //             isMounted && setTabs(response);
-        //             console.log(response);
-        //         });
-        //     } catch (err) {
-        //         // Handle error
-        //         console.log(err);
-        //     }
-        // };
-        // getTabs();
-        //
-        // return () => {
-        //     isMounted = false;
-        //     controller.abort();
-        // };
-        httpTabsGetTabs().then((response: TabsDocumentProps[]): void => {
-            setTabs(response);
-        });
+        console.log('useEffect');
+        console.log(tabs);
+        let isMounted = true;
+        const controller = new AbortController();
+        const getTabs = async () => {
+            try {
+                await httpTabsGetTabs(controller.signal).then((response: TabsDocumentProps[]): void => {
+                    isMounted && setTabs(response);
+                    console.log(response);
+                });
+            } catch (err) {
+                // Handle error
+                console.log(err);
+            }
+        };
+        getTabs();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        };
     }, []);
 
     const handleSubmit = (e) => {
@@ -71,14 +67,14 @@ const SideBar = () => {
                               return (
                                   <>
                                       <div key={sideBarTab.uuid}>
-                                          <SideBarTab props={sideBarTab}></SideBarTab>
-                                          {isAdmin ? (
+                                          {validateSideBarAccess(sideBarTab) ? <SideBarTab props={sideBarTab}></SideBarTab> : null}
+                                          {validateIsAdmin() ? (
                                               <SideBarEditButton
                                                   props={sideBarTab}
                                                   onUpdateTabs={(tabs: TabsDocumentProps[]) => setTabs(tabs)}
                                               ></SideBarEditButton>
                                           ) : null}
-                                          {isAdmin ? (
+                                          {validateIsAdmin() ? (
                                               <SideBarDeleteButton
                                                   props={sideBarTab}
                                                   onDeleteTabs={(tabs: TabsDocumentProps[]) => setTabs(tabs)}
@@ -89,7 +85,7 @@ const SideBar = () => {
                               );
                           })
                         : null}
-                    {isAdmin ? <SideBarAddNewTab onAddNewTab={(tabs: TabsDocumentProps[]) => setTabs(tabs)}></SideBarAddNewTab> : null}
+                    {validateIsAdmin() ? <SideBarAddNewTab onAddNewTab={(tabs: TabsDocumentProps[]) => setTabs(tabs)}></SideBarAddNewTab> : null}
                 </section>
             </nav>
             <Outlet></Outlet>

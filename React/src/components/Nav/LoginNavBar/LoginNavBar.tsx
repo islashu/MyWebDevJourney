@@ -9,7 +9,6 @@ const LoginNavBar = () => {
     const {getReduxAuthSliceIsUserAuthenticated, getReduxAuthSliceUsername, setReduxAuthSlice} = useReduxAuthSliceService();
     const isUserAuthenticated = getReduxAuthSliceIsUserAuthenticated();
     const {httpAuthLogout} = useHttpAuth();
-    const {resetAxiosJwtHeaders} = useAxiosJwt();
     const username = getReduxAuthSliceUsername();
 
     const handleLogOut = async () => {
@@ -19,7 +18,6 @@ const LoginNavBar = () => {
         // Remove everything from redux
         await setReduxAuthSlice(false, '', '', '', false);
         // Reset header because the accessToken will still be tagged to it
-        resetAxiosJwtHeaders();
     };
 
     return (

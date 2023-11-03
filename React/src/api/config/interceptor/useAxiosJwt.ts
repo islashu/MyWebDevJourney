@@ -12,16 +12,6 @@ const useAxiosJwt = () => {
         useReduxAuthSliceService();
     let accessToken = getReduxAuthSliceAccessToken();
 
-    const resetAxiosJwtHeaders = () => {
-        axiosPrivate.interceptors.request.use(
-            (config) => {
-                config.headers['Authorization'] = `Bearer `;
-                return config;
-            },
-            (error) => Promise.reject(error)
-        );
-    };
-
     useEffect(() => {
         console.log('running use interceptor jwt');
         const requestIntercept = axiosPrivate.interceptors.request.use(
@@ -51,18 +41,24 @@ const useAxiosJwt = () => {
 
                 if (error?.response?.status === 403 && !prevRequest?.sent) {
                     prevRequest.sent = true;
-                    // Received a new access token using refresh Token
+                    // Getting the store refresh token given during the initialise authentication
                     const refreshToken = getReduxAuthSliceRefreshToken();
                     const authTO = new AuthTO({refreshToken: refreshToken});
                     /*Received a new access token using refresh Token*/
                     const newAccessToken: string | void = await httpAuthRefresh(authTO);
                     // Typescript: we can counteract the compiler from insisting that the methods below must take in a void as a type by doing this null check.
+                    /*
+                     * We want to prevent removing the refresh token from redux if the new access token is not received. That's why we are checking for a new access token.
+                     * */
                     if (newAccessToken) {
                         // Remove refresh token after usage
-                        await setReduxAuthSliceRefreshToken('');
+                        console.log('Adding new access token to redux and axios header');
+                        setReduxAuthSliceRefreshToken('');
                         setReduxAuthSliceAccessToken(newAccessToken);
                         prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
                     }
+                    // Retry the request with the new access token
+                    console.log('Retrying request with new access token');
                     return axiosPrivate(prevRequest);
                 }
                 return Promise.reject(error);
@@ -75,7 +71,7 @@ const useAxiosJwt = () => {
         };
     }, [accessToken]);
 
-    return {axiosPrivate, resetAxiosJwtHeaders};
+    return {axiosPrivate};
 };
 
 export default useAxiosJwt;

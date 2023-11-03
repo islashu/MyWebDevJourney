@@ -7,7 +7,7 @@ interface Props {
     onDelete: () => void;
     onCancel: () => void;
 }
-const DeleteModal = ({isOpen, onDelete, onCancel}: Props) => {
+const DeleteConfirmationModal = ({isOpen, onDelete, onCancel}: Props) => {
     const dialogRef = useRef<null | HTMLDialogElement>(null);
 
     useEffect(() => {
@@ -65,4 +65,4 @@ const DeleteModal = ({isOpen, onDelete, onCancel}: Props) => {
     );
 };
 
-export default DeleteModal;
+export default DeleteConfirmationModal;

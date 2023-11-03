@@ -53,19 +53,31 @@ const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onU
     const handleSubmit = async (e): Promise<void> => {
         try {
             e.preventDefault();
-            setIsToggle(false);
             const newTabData: TabsTO = new TabsTO({
                 uuid: props.uuid,
                 name: tabName,
                 childTabs: childTabList,
                 isPrivate: isPrivate
             });
+            console.log('newTabData', newTabData);
             await httpTabsUpdateTab(newTabData);
             const updatedTabs = await httpTabsGetTabs();
+            setIsToggle(false);
             onUpdateTabs(updatedTabs);
         } catch (err) {
             console.log(err);
         }
+    };
+
+    const handleAddNewChildTab = () => {
+        setChildTabList([
+            ...childTabList,
+            {
+                name: '',
+                path: '',
+                isPrivate: false
+            }
+        ]);
     };
     const handleRemoveNewChildTab = (index) => {
         const newChildTabList = [...childTabList];
@@ -131,12 +143,12 @@ const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onU
                             className="w-full rounded-xl border border-solid border-slate-900 p-3 text-2xl text-black dark:border-none sm:text-3xl"
                             type="checkbox"
                             id="tabIsPrivate"
+                            checked={isPrivate}
                             ref={isPrivateRef}
                             onChange={(e) => {
                                 let isChecked = e.target.checked;
                                 if (isChecked) {
                                     setIsPrivate(true);
-                                    console.log('value is checked');
                                 } else {
                                     setIsPrivate(false);
                                 }
@@ -177,6 +189,7 @@ const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onU
                                         className="w-32 rounded-xl border border-solid border-slate-900 p-3 text-black dark:border-none"
                                         type="checkbox"
                                         id="childTabIsPrivate"
+                                        checked={childTab.isPrivate}
                                         onChange={(e) => handleChangeIsPrivateNewChildTab(e, index)}
                                     />
                                 </section>
@@ -189,6 +202,11 @@ const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onU
                                     )}
                                 </section>
                             </div>
+                            {childTabList.length - 1 === index && childTabList.length < 4 && (
+                                <button type="button" onClick={() => handleAddNewChildTab()} className="">
+                                    <span>Add</span>
+                                </button>
+                            )}
                         </>
                     ))}
 

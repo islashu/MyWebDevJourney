@@ -63,7 +63,6 @@ export const useHttpAuth = () => {
             .then((response) => {
                 // Typescript: we can do this to let the compiler know that we are returning a string type rather than returning the response.data.accessToken immediately
                 const authTO: AuthTOProps = convertAuthTOJson(response.data);
-                console.log('authTO', authTO);
                 return authTO.accessToken;
             })
             .catch((err) => {

@@ -4,6 +4,7 @@ import {useHttpAuth} from '../../api/auth/auth.api';
 import {useReduxAuthSliceService} from '../../redux/slices/auth/authSlice.service';
 import {useHttpAuthJwt} from '../../api/auth/auth.jwt.api';
 import {AuthTO, AuthTOProps} from '../../model/auth.model';
+import {axiosPrivate} from '../../api/config/axios.ts';
 
 const LoginPage = () => {
     const usernameRef = useRef();

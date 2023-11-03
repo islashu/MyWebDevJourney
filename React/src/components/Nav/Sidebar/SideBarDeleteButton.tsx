@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {CiCircleMinus} from 'react-icons/ci';
-import DeleteModal from '../../Modal/DeleteModal.tsx';
+import DeleteConfirmationModal from '../../Modal/DeleteConfirmationModal.tsx';
 import {useHttpTabsJwt} from '../../../api/tabs/tabs.jwt.api.ts';
 import {TabsDocumentProps, TabsTO} from '../../../model/tab.model.ts';
 import {useHttpTabs} from '../../../api/tabs/tabs.api.ts';
@@ -27,7 +27,7 @@ const SideBarDeleteButton = ({props, onDeleteTabs}: {props: TabsDocumentProps; o
             <button onClick={() => setIsToggle(true)}>
                 <CiCircleMinus size={20} />
             </button>
-            <DeleteModal isOpen={isToggle} onDelete={() => handleDelete()} onCancel={() => setIsToggle(false)}></DeleteModal>
+            <DeleteConfirmationModal isOpen={isToggle} onDelete={() => handleDelete()} onCancel={() => setIsToggle(false)}></DeleteConfirmationModal>
         </>
     );
 };

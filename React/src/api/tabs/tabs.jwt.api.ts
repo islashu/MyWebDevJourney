@@ -30,7 +30,7 @@ export const useHttpTabsJwt = () => {
 
     const httpTabsDeleteTab = async (tabsTO: TabsTOProps, controllerSignal?: AbortSignal): Promise<boolean> => {
         return await axiosPrivate
-            .delete('/tabs/delete', {data: {tabsTO: tabsTO}, signal: controllerSignal})
+            .delete('/tabs/delete', {data: {tabsTO: tabsTO}, signal: controllerSignal, withCredentials: true})
             .then((response) => {
                 return true;
             })
