@@ -6,7 +6,6 @@ import NavBar from './components/Nav/NavBar/NavBar';
 import LoginPage from './pages/LoginPage/LoginPage';
 import ReferencePage from './pages/ReferencePage/ReferencePage';
 import SignupPage from './pages/SignupPage/SignupPage';
-import React from 'react';
 
 function App() {
     return (

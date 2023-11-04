@@ -1,0 +1,24 @@
+This directory contains the common components that can be used through the entire frontend such as buttons, navbar, sidebar etc
+
+Creating a component template can be easily done using shortcuts in Webstorm
+rsc - arrow function component
+rsf - function component
+
+## React mapping and unique key issue
+
+React will not be going through the entire array to check for a key
+
+When React goes through an array, it only looks at the things directly in it. It doesn't recurse all the way through looking for a key. If it did, it would (1) be slow, and (2) cause ambiguity when there were nested arrays.
+If you use a map, just put the key in the outer most layer
+
+if you have fragments
+
+# WRONG
+<>
+    <div key= {}> </div>
+</>
+
+# RIGHT
+    <div key= {}> </div>
+
+This will cause an issue, rather you want to remove the fragments. As long as, the outer most element has the key, it will work

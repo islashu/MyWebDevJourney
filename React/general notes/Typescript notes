@@ -44,3 +44,6 @@ if you want to use an interface but a component also has the same name
 TS2339: Property does not exist on type:
     - Ensure that you are not deconstructing the props such as using {props}: type
     - Ensure that you are taking in the correct types like [] vs other thing
+
+
+Note that the clean up function will always run if the component is unmounted

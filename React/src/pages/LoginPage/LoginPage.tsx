@@ -5,30 +5,33 @@ import {useReduxAuthSliceService} from '../../redux/slices/auth/authSlice.servic
 import {useHttpAuthJwt} from '../../api/auth/auth.jwt.api';
 import {AuthTO, AuthTOProps} from '../../model/auth.model';
 import {axiosPrivate} from '../../api/config/axios.ts';
+import {useForm} from 'react-hook-form';
 
 const LoginPage = () => {
-    const usernameRef = useRef();
-    const passwordRef = useRef();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
     const {setReduxAuthSlice, getReduxAuthSlice} = useReduxAuthSliceService();
     // Get global state from redux
     const {httpAuthLogin} = useHttpAuth();
     const {httpAuthJwtProtected} = useHttpAuthJwt();
-    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (e): Promise<void> => {
-        // setIsLoading((prev) => !prev);
-        e.preventDefault();
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: {errors, isValid},
+        setValue,
+        getValues
+    } = useForm({mode: 'onTouched'});
+
+    const onSubmit = async (data): Promise<void> => {
         // send login information as http request to BE
         try {
             // Get back an accessToken and a refreshToken to store in redux
-            const authTO: AuthTOProps = new AuthTO({username: username, password: password});
+            const authTO: AuthTOProps = new AuthTO({username: data.username, password: data.password});
             const {accessToken, refreshToken} = await httpAuthLogin(authTO);
             // Store in redux
-            await setReduxAuthSlice(true, accessToken, refreshToken, username, true).then((response) => {
+            await setReduxAuthSlice(true, accessToken, refreshToken, data.username, true).then((response) => {
                 navigate('/');
             });
         } catch (err) {
@@ -51,35 +54,24 @@ const LoginPage = () => {
 
     return (
         <>
-            <form className=" flex flex-col max-w-2xl mx-auto relative p-6" onSubmit={(event) => handleSubmit(event)}>
-                {/* Always have a label, the uuid of the input must be the same as the html for*/}
-                <label className="" htmlFor="username">
-                    Username:{' '}
+            <form className=" flex flex-col max-w-2xl mx-auto relative p-6" onSubmit={handleSubmit(onSubmit)}>
+                <label className={errors.username ? 'text-rose-700 font-bold' : ''} htmlFor="username">
+                    Username:
                 </label>
-                {/*bind value to state so that we can clear it after submission*/}
-                {/*Ref allows use to move the screen of the auth to focus on something we want */}
-                <input
-                    className="border border-solid border-black"
-                    type="text"
-                    id="username"
-                    ref={usernameRef}
-                    onChange={(e) => setUsername(e.target.value)}
-                    autoComplete="off"
-                    required
-                />
-                <label htmlFor="password">Password: </label>
-                <input
-                    className="border border-solid border-black"
-                    type="text"
-                    id="password"
-                    ref={passwordRef}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="off"
-                    required
-                />
+                <input className="border border-solid border-black" type="text" id="username" {...register('username', {required: true})} />
+                {errors.username && <span>This field is required</span>}
+
+                <label htmlFor="password" className={errors.password ? 'text-rose-700 font-bold' : ''}>
+                    Password:{' '}
+                </label>
+                <input className="border border-solid border-black" type="password" id="password" {...register('password', {required: true})} />
+                {errors.password && <span>This field is required</span>}
                 <label htmlFor="submit"></label>
-                <button className="bg-gray-200 hover:bg-gray-300 transition duration-300 ease-in-out text-xl font-bold m-4" type="submit">
-                    {' '}
+                <button
+                    disabled={!isValid}
+                    className="bg-gray-200 hover:enabled:bg-gray-300 transition duration-300 ease-in-out text-xl font-bold m-4"
+                    type="submit"
+                >
                     submit
                 </button>
             </form>

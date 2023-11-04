@@ -9,6 +9,7 @@ import SideBarEditButton from './SideBarEditButton.tsx';
 import SideBarDeleteButton from './SideBarDeleteButton.tsx';
 import {useReduxAuthSliceService} from '../../../redux/slices/auth/authSlice.service.ts';
 import {useRightsValidator} from '../../../hooks/useRightsValidator.ts';
+import {useAbortController} from '../../../util/useAbortController.ts';
 /*
  * For this to exist along side every other component, you have to use an outlet
  * */
@@ -24,16 +25,18 @@ const SideBar = () => {
 
     // Get Tabs Data via HTTP
     useEffect(() => {
-        console.log('useEffect');
-        console.log(tabs);
-        let isMounted = true;
-        const controller = new AbortController();
-        const getTabs = async () => {
+        let isMounted: boolean = true;
+        const controller: AbortController = new AbortController();
+        const getTabs = async (): Promise<void> => {
             try {
-                await httpTabsGetTabs(controller.signal).then((response: TabsDocumentProps[]): void => {
-                    isMounted && setTabs(response);
-                    console.log(response);
-                });
+                await httpTabsGetTabs(controller.signal)
+                    .then((response: TabsDocumentProps[]): void => {
+                        isMounted && setTabs(response);
+                        console.log(response);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
             } catch (err) {
                 // Handle error
                 console.log(err);
@@ -63,25 +66,23 @@ const SideBar = () => {
             <nav>
                 <section className=" flex flex-col w-96 border border-solid border-black">
                     {tabs.length > 0
-                        ? tabs.map((sideBarTab: TabsDocumentProps) => {
+                        ? tabs.map((sideBarTab: TabsDocumentProps, index) => {
                               return (
-                                  <>
-                                      <div key={sideBarTab.uuid}>
-                                          {validateSideBarAccess(sideBarTab) ? <SideBarTab props={sideBarTab}></SideBarTab> : null}
-                                          {validateIsAdmin() ? (
-                                              <SideBarEditButton
-                                                  props={sideBarTab}
-                                                  onUpdateTabs={(tabs: TabsDocumentProps[]) => setTabs(tabs)}
-                                              ></SideBarEditButton>
-                                          ) : null}
-                                          {validateIsAdmin() ? (
-                                              <SideBarDeleteButton
-                                                  props={sideBarTab}
-                                                  onDeleteTabs={(tabs: TabsDocumentProps[]) => setTabs(tabs)}
-                                              ></SideBarDeleteButton>
-                                          ) : null}
-                                      </div>
-                                  </>
+                                  <div key={sideBarTab.uuid}>
+                                      {validateSideBarAccess(sideBarTab) ? <SideBarTab props={sideBarTab}></SideBarTab> : null}
+                                      {validateIsAdmin() ? (
+                                          <SideBarEditButton
+                                              props={sideBarTab}
+                                              onUpdateTabs={(tabs: TabsDocumentProps[]) => setTabs(tabs)}
+                                          ></SideBarEditButton>
+                                      ) : null}
+                                      {validateIsAdmin() ? (
+                                          <SideBarDeleteButton
+                                              props={sideBarTab}
+                                              onDeleteTabs={(tabs: TabsDocumentProps[]) => setTabs(tabs)}
+                                          ></SideBarDeleteButton>
+                                      ) : null}
+                                  </div>
                               );
                           })
                         : null}

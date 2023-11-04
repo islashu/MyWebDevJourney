@@ -1,7 +1,11 @@
-import {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useHttpAuth} from '../../api/auth/auth.api';
 import {AuthTO, AuthTOProps} from '../../model/auth.model';
 import {useNavigate} from 'react-router-dom';
+import {useForm} from 'react-hook-form';
+import * as string_decoder from 'string_decoder';
+import {useFormValidator} from '../../hooks/useFormValidator.ts';
+import {ToastContainer, toast} from 'react-toastify';
 
 const USERNAME_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -9,70 +13,55 @@ const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/;
 
 const SignupPage = () => {
     const navigate = useNavigate();
-    const usernameRef = useRef();
-    const passwordRef = useRef();
-    const errRef = useRef(null);
-
-    const confirmPasswordRef = useRef();
-    const emailAddressRef = useRef();
+    const {validatePassword, validateEmail} = useFormValidator();
     const {httpAuthRegister} = useHttpAuth();
 
-    const [username, setUsername] = useState('');
-    const [isUsernameValid, setIsUsernameValid] = useState(false);
-    const [userFocus, setUserFocus] = useState(false);
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: {errors, isValid},
+        setValue,
+        getValues
+    } = useForm({mode: 'onTouched'});
 
-    const [password, setPassword] = useState('');
-    const [isPasswordValid, setIsPasswordValid] = useState(false);
-    const [passwordFocus, setPasswordFocus] = useState(false);
+    type SignUpFormValues = {
+        username: string;
+        password: string;
+        emailAddress: string;
+    };
 
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(false);
-    const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
-
-    const [emailAddress, setEmailAddress] = useState('');
-    const [isEmailAddressValid, setIsEmailAddressValid] = useState(false);
-    const [emailFocus, setEmailFocus] = useState(false);
-
-    const [errMsg, setErrMsg] = useState('');
-
-    const handleSubmit = async (e) => {
+    const onSubmit = async (data) => {
         try {
-            // prevent the page from reloading and unmounting the component when submitting the form (default html behaviour), this prevents state from being lost
-            e.preventDefault();
-            // Do something
             const user = new AuthTO({
-                username: username,
-                password: password,
-                emailAddress: emailAddress
+                username: data.username,
+                password: data.password,
+                emailAddress: data.emailAddress
             });
-            // if error, display the error
-            await httpAuthRegister(user);
+            await toast.promise(
+                async () => {
+                    const result = await httpAuthRegister(user);
+                    if (!result) throw new Error('Error creating user'); // TODO if receive error from server, throw error or something
+                },
+                {
+                    pending: 'Updating tab...',
+                    success: 'Tab updated successfully',
+                    error: 'Error updating tab'
+                }
+            );
+
             navigate('/login');
         } catch (err) {
-            setErrMsg('');
-            errRef.current.focus;
+            console.log(err);
         }
     };
 
-    // Validate username
-    useEffect(() => {
-        setIsUsernameValid(USERNAME_REGEX.test(username));
-    }, [username]);
-
-    // Validate password
-    useEffect(() => {
-        setIsPasswordValid(PASSWORD_REGEX.test(password));
-        setIsConfirmPasswordValid(password === confirmPassword);
-    }, [password, confirmPassword]);
-
-    // Validate email address
-    useEffect(() => {
-        setIsEmailAddressValid(EMAIL_REGEX.test(emailAddress));
-    }, [emailAddress]);
+    const onTestSubmit = async (data: SignUpFormValues): Promise<void> => {
+        console.log(data);
+    };
 
     return (
         <>
-            {/* TODO: add a loading overlap*/}
             <div className="min-h-screen">
                 <header>
                     <section className="max-w-2xl mx-auto p-4 flex justify-between items-center">
@@ -80,105 +69,78 @@ const SignupPage = () => {
                     </section>
                 </header>
 
-                <p ref={errRef} className={errMsg ? 'visible text-rose-700 font-bold' : 'hidden'}>
-                    {errMsg}
-                </p>
-                <form className="items-left mx-auto flex max-w-2xl flex-col gap-4 " onSubmit={(event) => handleSubmit(event)}>
-                    {/* Always have a label, the uuid of the input must be the same as the html for*/}
-                    <label htmlFor="username" className={isUsernameValid ? '' : 'text-rose-700 font-bold'}>
-                        Username:{' '}
+                <form className="items-left mx-auto flex max-w-2xl flex-col gap-4 " onSubmit={handleSubmit(onSubmit)}>
+                    <label htmlFor="username" className={errors.username ? 'text-rose-700 font-bold' : ''}>
+                        Username:
                     </label>
-                    {/*bind value to state so that we can clear it after submission*/}
-                    {/*Ref allows use to move the screen of the auth to focus on something we want */}
                     <input
                         className="w-full rounded-xl border border-solid border-slate-900 p-3 text-2xl text-black dark:border-none sm:text-3xl"
                         type="text"
                         id="username"
-                        ref={usernameRef}
-                        onChange={(e) => setUsername(e.target.value)}
+                        {...register('username', {required: true})}
                         autoComplete="on"
-                        onFocus={() => setUserFocus(true)}
-                        onBlur={() => {
-                            setUserFocus(false);
-                        }}
-                        required
                     />
-                    <p className={!isUsernameValid && userFocus ? 'visible' : 'hidden'}>
-                        4 to 24 characters.
-                        <br />
-                        Must begin with a letter.
-                        <br />
-                        Letters, numbers, underscores, hyphens allowed.
-                    </p>
+                    <p>{errors.username && <span>This field is required</span>}</p>
 
-                    <label htmlFor="password" className={isPasswordValid ? '' : 'text-rose-700 font-bold'}>
-                        Password:{' '}
+                    <label htmlFor="password" className={errors.password ? 'text-rose-700 font-bold' : ''}>
+                        Password:
                     </label>
                     <input
                         className="w-full rounded-xl border border-solid border-slate-900 p-3 text-2xl text-black dark:border-none sm:text-3xl"
-                        type="text"
+                        type="password"
                         id="password"
-                        ref={passwordRef}
-                        onChange={(e) => setPassword(e.target.value)}
                         autoComplete="on"
-                        required
-                        onFocus={() => setPasswordFocus(true)}
-                        onBlur={() => {
-                            setPasswordFocus(false);
-                        }}
+                        {...register('password', {
+                            required: true,
+                            validate: {
+                                isValidPassword: (value) => validatePassword(value) || 'invalid Password'
+                            }
+                        })}
                     />
-                    <p className={!isPasswordValid && passwordFocus ? 'visible' : 'hidden'}>
-                        8 to 24 characters.
-                        <br />
-                        Must include uppercase and lowercase letters, a number and a special character.
-                        <br />
-                    </p>
+                    <p>{errors.password && <span>Password is invalid. Please Try again!</span>}</p>
 
-                    <label htmlFor="confirmPassword" className={isPasswordValid && isConfirmPasswordValid ? '' : 'text-rose-700 font-bold'}>
-                        Confirm Password:{' '}
+                    <label htmlFor="confirmPassword" className={errors.confirmPassword ? 'text-rose-700 font-bold' : ''}>
+                        Confirm Password:
                     </label>
                     <input
                         className="w-full rounded-xl border border-solid border-slate-900 p-3 text-2xl text-black dark:border-none sm:text-3xl"
-                        type="text"
+                        type="password"
                         id="confirmPassword"
-                        ref={confirmPasswordRef}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
                         autoComplete="on"
-                        required
-                        onFocus={() => setConfirmPasswordFocus(true)}
-                        onBlur={() => {
-                            setConfirmPasswordFocus(false);
-                        }}
+                        {...register('confirmPassword', {
+                            required: true,
+                            validate: {
+                                isValidPassword: (value) => value === getValues('password') || 'invalid confirm password'
+                            }
+                        })}
                     />
-                    <p className={!isConfirmPasswordValid || !isPasswordValid ? 'visible' : 'hidden'}>Passwords does not match</p>
+                    <p>{errors.confirmPassword && <span>Password are not the same.</span>}</p>
 
-                    <label htmlFor="emailAddress" className={isEmailAddressValid ? '' : 'text-rose-700 font-bold'}>
+                    <label htmlFor="emailAddress" className={errors.emailAddress ? 'text-rose-700 font-bold' : ''}>
                         Email Address:{' '}
                     </label>
                     <input
                         className="w-full rounded-xl border border-solid border-slate-900 p-3 text-2xl text-black dark:border-none sm:text-3xl"
-                        type="text"
-                        id="email"
-                        ref={emailAddressRef}
-                        onChange={(e) => setEmailAddress(e.target.value)}
-                        autoComplete="on"
-                        required
-                        onFocus={() => setEmailFocus(true)}
-                        onBlur={() => {
-                            setEmailFocus(false);
-                        }}
+                        type="email"
+                        id="emailAddress"
+                        {...register('emailAddress', {
+                            validate: {
+                                isValidEmail: (value) => validateEmail(value) || 'invalid email'
+                            }
+                        })}
                     />
-                    <p className={!isEmailAddressValid && emailFocus ? 'visible' : 'hidden'}>Please enter a valid email address</p>
+                    <p>{errors.emailAddress && <span>Email is invalid.</span>}</p>
 
                     <label htmlFor="submit"></label>
                     <button
-                        disabled={!(isUsernameValid || isPasswordValid || isEmailAddressValid)}
-                        className="border border-solid border-slate-900 text-black dark:border-none sm:text-2xl bg-gray-50 hover:bg-gray-300 transition duration-300 ease-in-out"
+                        disabled={!isValid}
+                        className="border border-solid border-slate-900 text-black dark:border-none sm:text-2xl bg-gray-50 hover:enabled:bg-gray-300 transition duration-300 ease-in-out"
                     >
                         Submit
                     </button>
                 </form>
             </div>
+            <ToastContainer position={'top-right'} autoClose={2000} closeOnClick={true} />
         </>
     );
 };

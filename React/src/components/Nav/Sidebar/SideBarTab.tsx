@@ -9,9 +9,9 @@ const SideBarTab = ({props}: {props: TabsDocumentProps}) => {
     const sideBarChildTabs: ChildTabProps[] = props.childTabs;
 
     const renderSideBarChildTabs = () => {
-        return sideBarChildTabs.map((sideBarChildTab: ChildTabProps) => {
+        return sideBarChildTabs.map((sideBarChildTab: ChildTabProps, index: number) => {
             return (
-                <div key={sideBarChildTab.uuid}>
+                <div key={index}>
                     <SideBarChildTab props={sideBarChildTab}></SideBarChildTab>
                 </div>
             );

@@ -1,110 +1,76 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {Fragment, useEffect, useRef, useState} from 'react';
 import ModalContainer from '../../Modal/ModalContainer.tsx';
 import {CiEdit} from 'react-icons/ci';
 import {TabsDocumentProps, TabsTO} from '../../../model/tab.model.ts';
 import {useHttpTabsJwt} from '../../../api/tabs/tabs.jwt.api.ts';
 import {useHttpTabs} from '../../../api/tabs/tabs.api.ts';
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {useForm, SubmitHandler, useFieldArray} from 'react-hook-form';
 
 const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onUpdateTabs: (tabs: TabsDocumentProps[]) => void}) => {
     // Hooks
     const {httpTabsUpdateTab} = useHttpTabsJwt();
     const {httpTabsGetTabs} = useHttpTabs();
-
-    // UseStates and UseRefs
     const [isToggle, setIsToggle] = useState(false);
 
-    const tabNameRef = useRef();
-    const [tabName, setTabName] = useState('');
-    const [isTabNameValid, setIsTabNameValid] = useState(false);
-    const [tabNameFocus, setTabNameFocus] = useState(false);
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: {errors, isValid},
+        setValue
+    } = useForm({mode: 'onTouched'});
 
-    const isPrivateRef = useRef();
-    const [isPrivate, setIsPrivate] = useState(false);
+    const {
+        fields: childTabsFields,
+        append: childTabsAppend,
+        remove: childTabsRemove
+    } = useFieldArray({
+        name: 'childTabs',
+        control
+    });
 
-    const [childTabList, setChildTabList] = useState([
-        {
-            name: '',
-            path: '',
-            isPrivate: false
-        }
-    ]);
-
-    /*
-     Pass the data of the "tab to update" to the modal component
-    */
     useEffect(() => {
-        console.log('props', props);
-        setTabName(props.name);
-        setIsPrivate(props.isPrivate);
-        setChildTabList(props.childTabs);
+        setValue('tabName', props.name);
+        setValue('isPrivate', props.isPrivate);
+        setValue('childTabs', props.childTabs);
     }, []);
 
-    /*
-     For Validation of fields
-    */
-    useEffect(() => {
-        if (tabName === '') {
-            setIsTabNameValid(false);
-        } else {
-            setIsTabNameValid(true);
-        }
-    }, [tabName]);
-
-    const handleSubmit = async (e): Promise<void> => {
+    type TabFormValues = {
+        tabName: string;
+        isPrivate: boolean;
+        childTabs: {
+            name: string;
+            path: string;
+            isPrivate: boolean;
+        }[];
+    };
+    console.log('re-render');
+    const onSubmit = async (data: TabFormValues): Promise<void> => {
         try {
-            e.preventDefault();
             const newTabData: TabsTO = new TabsTO({
                 uuid: props.uuid,
-                name: tabName,
-                childTabs: childTabList,
-                isPrivate: isPrivate
+                name: data.tabName,
+                childTabs: data.childTabs,
+                isPrivate: data.isPrivate
             });
-            console.log('newTabData', newTabData);
-            await httpTabsUpdateTab(newTabData);
-            const updatedTabs = await httpTabsGetTabs();
-            setIsToggle(false);
-            onUpdateTabs(updatedTabs);
+            await toast.promise(
+                async () => {
+                    await httpTabsUpdateTab(newTabData);
+                    const updatedTabs = await httpTabsGetTabs();
+                    setIsToggle(false);
+                    onUpdateTabs(updatedTabs);
+                },
+                {
+                    pending: 'Updating tab...',
+                    success: 'Tab updated successfully',
+                    error: 'Error updating tab'
+                }
+            );
         } catch (err) {
             console.log(err);
         }
-    };
-
-    const handleAddNewChildTab = () => {
-        setChildTabList([
-            ...childTabList,
-            {
-                name: '',
-                path: '',
-                isPrivate: false
-            }
-        ]);
-    };
-    const handleRemoveNewChildTab = (index) => {
-        const newChildTabList = [...childTabList];
-        newChildTabList.splice(index, 1);
-        setChildTabList(newChildTabList);
-    };
-
-    const handleChangeNameNewChildTab = (e, index) => {
-        const {name, value} = e.target;
-        const list = [...childTabList];
-        list[index].name = value;
-        setChildTabList(list);
-    };
-
-    const handleChangePathNewChildTab = (e, index) => {
-        const {path, value} = e.target;
-        const list = [...childTabList];
-        list[index].path = value;
-        setChildTabList(list);
-    };
-
-    const handleChangeIsPrivateNewChildTab = (e, index) => {
-        let isChecked = e.target.checked ? true : false;
-
-        const list = [...childTabList];
-        list[index].isPrivate = isChecked;
-        setChildTabList(list);
     };
 
     return (
@@ -119,57 +85,41 @@ const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onU
                     setIsToggle(false);
                 }}
             >
-                <form className="items-left mx-auto flex max-w-2xl flex-col gap-4 " onSubmit={(event) => handleSubmit(event)}>
-                    <label htmlFor="tabName" className={isTabNameValid ? '' : 'text-rose-700 font-bold'}>
-                        Name of Tab:
-                    </label>
+                <form className="items-left mx-auto flex max-w-2xl flex-col gap-4 " onSubmit={handleSubmit(onSubmit)}>
+                    <label htmlFor="tabName">Name of Tab:</label>
                     <input
                         className="w-full rounded-xl border border-solid border-slate-900 p-3 text-2xl text-black dark:border-none sm:text-3xl"
                         type="text"
                         id="tabName"
-                        ref={tabNameRef}
-                        value={tabName}
-                        onChange={(e) => setTabName(e.target.value)}
-                        onFocus={() => setTabNameFocus(true)}
-                        onBlur={() => {
-                            setTabNameFocus(false);
-                        }}
-                        required
+                        {...register('tabName', {required: true})}
+                        placeholder="Tab Name"
                     />
+                    {errors.tabName && <span>This field is required</span>}
 
                     <section className="flex justify-between border border-black border-solid">
-                        <label htmlFor="tabIsPrivate">Is Tab Private:</label>
+                        <label htmlFor="isPrivate">Is Tab Private:</label>
                         <input
                             className="w-full rounded-xl border border-solid border-slate-900 p-3 text-2xl text-black dark:border-none sm:text-3xl"
                             type="checkbox"
-                            id="tabIsPrivate"
-                            checked={isPrivate}
-                            ref={isPrivateRef}
-                            onChange={(e) => {
-                                let isChecked = e.target.checked;
-                                if (isChecked) {
-                                    setIsPrivate(true);
-                                } else {
-                                    setIsPrivate(false);
-                                }
-                            }}
+                            id="isPrivate"
+                            {...register('isPrivate')}
                         />
                     </section>
 
-                    {childTabList.map((childTab, index) => (
-                        <>
-                            <div className="flex justify-between border border-black border-solid">
+                    <section className="flex flex-col justify-between border border-black border-solid">
+                        {childTabsFields.map((field, index) => (
+                            <div className="flex" key={field.id}>
                                 <section className="flex flex-col">
                                     <label htmlFor="childTabName">Child Tab Name</label>
                                     <input
                                         className="w-32 rounded-xl border border-solid border-slate-900 p-3 text-black dark:border-none"
                                         type="text"
                                         id="childTabName"
-                                        value={childTab.name}
-                                        onChange={(e) => handleChangeNameNewChildTab(e, index)}
-                                        required
+                                        {...register(`childTabs.${index}.name`, {required: true})}
+                                        placeholder="Tab Name"
                                     />
                                 </section>
+                                {errors.childTabs?.[index]?.name && <span>This field is required</span>}
 
                                 <section className="flex flex-col">
                                     <label htmlFor="childTabPath">Path of child tab</label>
@@ -177,11 +127,11 @@ const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onU
                                         className="w-32 rounded-xl border border-solid border-slate-900 p-3 text-black dark:border-none"
                                         type="text"
                                         id="childTabPath"
-                                        value={childTab.path}
-                                        onChange={(e) => handleChangePathNewChildTab(e, index)}
-                                        required
+                                        {...register(`childTabs.${index}.path`, {required: true})}
+                                        placeholder="Tab Path"
                                     />
                                 </section>
+                                {errors.childTabs?.[index]?.path && <span>This field is required</span>}
 
                                 <section className="flex flex-col">
                                     <label htmlFor="childTabIsPrivate">Is Private</label>
@@ -189,41 +139,35 @@ const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onU
                                         className="w-32 rounded-xl border border-solid border-slate-900 p-3 text-black dark:border-none"
                                         type="checkbox"
                                         id="childTabIsPrivate"
-                                        checked={childTab.isPrivate}
-                                        onChange={(e) => handleChangeIsPrivateNewChildTab(e, index)}
+                                        {...register(`childTabs.${index}.isPrivate`)}
+                                        placeholder="Tab Path"
                                     />
                                 </section>
-
-                                <section>
-                                    {childTabList.length !== 1 && (
-                                        <button type="button" onClick={() => handleRemoveNewChildTab(index)} className="remove-btn">
-                                            <span>Remove</span>
-                                        </button>
-                                    )}
-                                </section>
+                                {index > 0 && (
+                                    <button type="button" onClick={() => childTabsRemove(index)} className="remove-btn">
+                                        Remove
+                                    </button>
+                                )}
                             </div>
-                            {childTabList.length - 1 === index && childTabList.length < 4 && (
-                                <button type="button" onClick={() => handleAddNewChildTab()} className="">
-                                    <span>Add</span>
-                                </button>
-                            )}
-                        </>
-                    ))}
+                        ))}
+                    </section>
+
+                    <button type="button" onClick={() => childTabsAppend({name: '', path: '', isPrivate: false})}>
+                        Add New Child Tab
+                    </button>
 
                     <label htmlFor="submit"></label>
                     <button
-                        disabled={!isTabNameValid}
-                        className="border border-solid border-slate-900 text-black dark:border-none sm:text-2xl bg-gray-50 hover:bg-gray-300 transition duration-300 ease-in-out"
+                        disabled={!isValid}
+                        className="border border-solid border-slate-900 text-black dark:border-none sm:text-2xl bg-gray-50 hover:enabled:bg-gray-300 transition duration-300 ease-in-out"
                     >
                         Submit
                     </button>
                 </form>
             </ModalContainer>
+            <ToastContainer position={'top-right'} autoClose={2000} closeOnClick={true} />
         </>
     );
 };
 
 export default SideBarEditButton;
-function httpTabsGetTabs() {
-    throw new Error('Function not implemented.');
-}
