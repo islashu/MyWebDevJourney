@@ -6,6 +6,7 @@ const MONGO_URL = process.env.MONGO;
 const {createCustomLogger} = require('./util/loggers/customLogger');
 import userRoutes = require('./routes/authRoutes');
 import tabsRoutes = require('./routes/tabsRoutes');
+import postsRoutes = require('./routes/postsRoutes');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middlewares/credentials.middleware');
@@ -44,6 +45,7 @@ app.use(express.json());
 // All routes
 app.use('/auth', userRoutes);
 app.use('/tabs', tabsRoutes);
+app.use('/posts', postsRoutes);
 
 // Global error handler
 app.use(errorHandlerMiddleware);

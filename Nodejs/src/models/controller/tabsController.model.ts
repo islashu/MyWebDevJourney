@@ -1,5 +1,5 @@
 import {TabsDocumentProps} from '../tab.model';
-import {TabsRepositoryProps} from '../database/tabsRespository.model';
+import {TabsRepositoryProps} from '../repository/tabsRepository.model';
 
 export interface TabsControllerProps {
     handleGetTabs(db: TabsRepositoryProps): Promise<TabsDocumentProps[]>;

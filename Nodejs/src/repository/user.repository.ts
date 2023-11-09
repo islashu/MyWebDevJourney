@@ -1,5 +1,5 @@
 import {User, UserDocumentProps} from '../models/user.model';
-import {UserRepositoryProps} from '../models/database/userRepository.model';
+import {UserRepositoryProps} from '../models/repository/userRepository.model';
 
 export class UserRepositoryMongo implements UserRepositoryProps {
     constructor() {}

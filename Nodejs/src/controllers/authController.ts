@@ -10,14 +10,14 @@ const logger = createCustomLogger('userController', 'user');
 const {validatePassword, issueAccessToken, issueRefreshToken} = require('../util/authentication/auth');
 const jwt = require('jsonwebtoken');
 import {ResponseError} from '../models/error.model';
-import {UserRepositoryProps} from '../models/database/userRepository.model';
+import {UserRepositoryProps} from '../models/repository/userRepository.model';
 import {AuthControllerProps} from '../models/controller/authController.model';
 import {v4 as uuidv4} from 'uuid';
 
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
-export class AuthControllerHandler implements AuthControllerProps {
+export class AuthController implements AuthControllerProps {
     async handleLogin(username: string, password: string, db: UserRepositoryProps): Promise<AuthTOProps> {
         if (!username || !password) throw new ResponseError(BAD_REQUEST, 'Username and password is required');
 
@@ -29,7 +29,7 @@ export class AuthControllerHandler implements AuthControllerProps {
         if (isMatch) {
             const accessToken = issueAccessToken(userFound, 5);
             const refreshToken = issueRefreshToken(userFound, 60 * 60 * 24);
-            // Store auth refresh token in DB for later usage
+            // Store auth isRefresh token in DB for later usage
             userFound.refreshToken = refreshToken;
             await db.save(userFound);
             // By doing this authTO controller completes the object for you.
@@ -62,12 +62,12 @@ export class AuthControllerHandler implements AuthControllerProps {
     }
 
     async handleRefreshToken(refreshToken: string, db: UserRepositoryProps): Promise<string> {
-        if (!refreshToken) throw new ResponseError(UNAUTHORISED, 'Missing refresh token!');
+        if (!refreshToken) throw new ResponseError(UNAUTHORISED, 'Missing isRefresh token!');
         const userFound: UserDocumentProps = await db.findByRefreshToken(refreshToken);
-        if (!userFound) throw new ResponseError(UNAUTHORISED, 'No user found with provided refresh token!');
+        if (!userFound) throw new ResponseError(UNAUTHORISED, 'No user found with provided isRefresh token!');
 
         /*
-         1. Evaluate refresh token before assign a new longer access token, jwt verify and then insert the object into the callback function as decoded in the callback function)
+         1. Evaluate isRefresh token before assign a new longer access token, jwt verify and then insert the object into the callback function as decoded in the callback function)
          2. We then take the callback function and compare it.
         */
         let newAccessToken = '';
@@ -75,7 +75,7 @@ export class AuthControllerHandler implements AuthControllerProps {
             if (err || userFound.username !== decoded.userInfo.username)
                 throw new ResponseError(FORBIDDEN, 'Token details are incorrect, token could have been tempered with!');
             const accessToken: string = issueAccessToken(userFound, 60 * 60 * 24);
-            // Remove refresh token from DB
+            // Remove isRefresh token from DB
             userFound.refreshToken = '';
             await db.save(userFound);
 

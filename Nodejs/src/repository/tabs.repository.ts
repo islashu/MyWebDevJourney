@@ -1,4 +1,4 @@
-import {TabsRepositoryProps} from '../models/database/tabsRespository.model';
+import {TabsRepositoryProps} from '../models/repository/tabsRepository.model';
 import {Tab, TabsDocumentProps} from '../models/tab.model';
 
 export class TabsRepositoryMongo implements TabsRepositoryProps {
@@ -18,7 +18,7 @@ export class TabsRepositoryMongo implements TabsRepositoryProps {
         const oldTab = Tab.findById(tab.uuid);
     }
 
-    async findbyUuid(uuid: string): Promise<TabsDocumentProps> {
+    async findByUuid(uuid: string): Promise<TabsDocumentProps> {
         return Tab.findOne({uuid: uuid});
     }
 }

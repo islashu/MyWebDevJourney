@@ -1,4 +1,4 @@
-import {UserRepositoryProps} from '../database/userRepository.model';
+import {UserRepositoryProps} from '../repository/userRepository.model';
 import {AuthTOProps} from '../auth.model';
 
 export interface AuthControllerProps {

@@ -1,7 +1,7 @@
 import {JwtProps} from '../../models/jwt.model';
 import {UserDocumentProps} from '../../models/user.model';
 import {UserRepositoryMongo} from '../../repository/user.repository';
-import {UserRepositoryProps} from '../../models/database/userRepository.model';
+import {UserRepositoryProps} from '../../models/repository/userRepository.model';
 
 const {User, UserDocumentProps} = require('../../models/user.model');
 require('dotenv').config();
@@ -35,7 +35,7 @@ const JwtStrategy = require('passport-jwt').Strategy,
  * Not all routes require authentication, if this is triggered for all routes, people will have to create an account just to view anything and
  * the resources is gated behind an account.
  *
- * Note that passport strategy does not issue a JWT, or refresh token, create your auth for you, it does not even attached the jwt token to your header.
+ * Note that passport strategy does not issue a JWT, or isRefresh token, create your auth for you, it does not even attached the jwt token to your header.
  * You have to do this yourself. The passport strategy only authenticates existing tokens which means that the first login you will have to issue a JWT token before you can run the passport strategy authenticate middlewares
  * This is all define by the developer and their own ways. passport strategy just authenticates based on a certain requirement and simply return yes or no to proceed forward.
  *

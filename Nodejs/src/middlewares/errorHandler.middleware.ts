@@ -1,6 +1,6 @@
 /*
  * This serves several purpose which is to catch and convert every known and unknown error so that the internal mechanism of the backend is shown
- * to the public. This also allow us to no longer write try catch blocks everywhere.
+ * to the public. This also allow us to no longer write try catch editorContent everywhere.
  *
  * This will be the centralise errorhandling middlewares which will process and convert error message thrown from every other middlewares in nodejs
  * We are essentially creating modularity where we can come in and direct certain errors to different handlers in the future

@@ -3,25 +3,25 @@ import {authErrorHandlerMiddleware} from '../middlewares/authErrorHandler.middle
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-import {tabServiceCreateNewTab, tabServiceDeleteTab, tabServiceGetTabs, tabServiceUpdateTab} from '../services/tabService';
+import {tabServiceCreateNewTab, tabServiceDeleteTab, tabServiceGetTabs, tabServiceUpdateTab} from '../services/tabsService';
 import {TabsControllerProps} from '../models/controller/tabsController.model';
-import {TabsRepositoryProps} from '../models/database/tabsRespository.model';
-import {TabsControllerHandler} from '../controllers/tabsControllerHandler';
+import {TabsRepositoryProps} from '../models/repository/tabsRepository.model';
+import {TabsController} from '../controllers/tabsController';
 import {TabsRepositoryMongo} from '../repository/tabs.repository';
 import {Request, Response} from 'express';
 
-const tabControllerHandler: TabsControllerProps = new TabsControllerHandler();
+const tabController: TabsControllerProps = new TabsController();
 const TabRepositoryMongo: TabsRepositoryProps = new TabsRepositoryMongo();
 router.get('/getTabs', (req: Request, res: Response, next: any) => {
     console.log('getTabs');
-    return tabServiceGetTabs(req, res, next, tabControllerHandler, TabRepositoryMongo);
+    return tabServiceGetTabs(req, res, next, tabController, TabRepositoryMongo);
 });
 router.post(
     '/create',
     [passport.authenticate('jwt', {session: false, failWithError: true}), authErrorHandlerMiddleware],
     (req: Request, res: Response, next: any) => {
         console.log('create');
-        return tabServiceCreateNewTab(req, res, next, tabControllerHandler, TabRepositoryMongo);
+        return tabServiceCreateNewTab(req, res, next, tabController, TabRepositoryMongo);
     }
 );
 router.put(
@@ -29,14 +29,14 @@ router.put(
     [passport.authenticate('jwt', {session: false, failWithError: true}), authErrorHandlerMiddleware],
     (req: Request, res: Response, next: any) => {
         console.log('update');
-        return tabServiceUpdateTab(req, res, next, tabControllerHandler, TabRepositoryMongo);
+        return tabServiceUpdateTab(req, res, next, tabController, TabRepositoryMongo);
     }
 );
 router.delete(
     '/delete',
     [passport.authenticate('jwt', {session: false, failWithError: true}), authErrorHandlerMiddleware],
     (req: Request, res: Response, next: any) => {
-        return tabServiceDeleteTab(req, res, next, tabControllerHandler, TabRepositoryMongo);
+        return tabServiceDeleteTab(req, res, next, tabController, TabRepositoryMongo);
     }
 );
 module.exports = router;

@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import {AuthTO, AuthTOProps, convertAuthTOJson} from '../models/auth.model';
 import {AuthControllerProps} from '../models/controller/authController.model';
-import {UserRepositoryProps} from '../models/database/userRepository.model';
+import {UserRepositoryProps} from '../models/repository/userRepository.model';
 import {ResponseError} from '../models/error.model';
 import {INTERNAL_SERVER_ERROR, OK, UNAUTHORISED} from '../util/codes/response.code';
 

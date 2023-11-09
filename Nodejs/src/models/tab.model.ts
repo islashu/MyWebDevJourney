@@ -1,30 +1,27 @@
 import mongoose from 'mongoose';
 import {v4 as uuidv4} from 'uuid';
 
-export interface ChildTabProps {
-    uuid?: string;
-    name: string;
-    path: string;
-    isPrivate: boolean;
-}
 export interface TabsDocumentProps {
     uuid?: string;
     name: string;
-    childTabs: ChildTabProps[];
+    childTabs: [];
     isPrivate: boolean;
+    path: string;
 }
 
 export class TabsDocument implements TabsDocumentProps {
     private _uuid?: string;
     private _name: string;
-    private _childTabs: ChildTabProps[];
+    private _childTabs: [];
     private _isPrivate: boolean;
+    private _path: string;
 
-    constructor(obj: {uuid?: string; name?: string; childTabs?: ChildTabProps[]; isPrivate?: boolean}) {
-        this._uuid = obj.uuid || '';
+    constructor(obj: {uuid?: string; name?: string; childTabs?: []; isPrivate?: boolean; path?: string}) {
+        this._uuid = obj.uuid || uuidv4();
         this._name = obj.name || '';
         this._childTabs = obj.childTabs || [];
         this._isPrivate = obj.isPrivate || false;
+        this._path = obj.path || '';
     }
 
     get uuid(): string {
@@ -43,11 +40,11 @@ export class TabsDocument implements TabsDocumentProps {
         this._name = value;
     }
 
-    get childTabs(): ChildTabProps[] {
+    get childTabs(): [] {
         return this._childTabs;
     }
 
-    set childTabs(value: ChildTabProps[]) {
+    set childTabs(value: []) {
         this._childTabs = value;
     }
 
@@ -57,27 +54,38 @@ export class TabsDocument implements TabsDocumentProps {
 
     set isPrivate(value: boolean) {
         this._isPrivate = value;
+    }
+
+    get path(): string {
+        return this._path;
+    }
+
+    set path(value: string) {
+        this._path = value;
     }
 }
 
 export interface TabsTOProps {
     uuid?: string;
     name: string;
-    childTabs: ChildTabProps[];
+    childTabs: [];
     isPrivate: boolean;
+    path: string;
 }
 
 class TabsTO implements TabsTOProps {
     private _uuid?: string;
-    private _childTabs?: ChildTabProps[];
+    private _childTabs?: [];
     private _isPrivate?: boolean;
     private _name?: string;
+    private _path?: string;
 
-    constructor(obj: {uuid?: string; name?: string; childTabs?: ChildTabProps[]; isPrivate?: boolean}) {
+    constructor(obj: {uuid?: string; name?: string; childTabs?: []; isPrivate?: boolean; path?: string}) {
         this._uuid = obj.uuid || uuidv4();
         this._name = obj.name || '';
         this._childTabs = obj.childTabs || [];
         this._isPrivate = obj.isPrivate || false;
+        this._path = obj.path || '';
     }
 
     get uuid(): string {
@@ -88,11 +96,11 @@ class TabsTO implements TabsTOProps {
         this._uuid = value;
     }
 
-    get childTabs(): ChildTabProps[] {
+    get childTabs(): [] {
         return this._childTabs;
     }
 
-    set childTabs(value: ChildTabProps[]) {
+    set childTabs(value: []) {
         this._childTabs = value;
     }
 
@@ -111,23 +119,32 @@ class TabsTO implements TabsTOProps {
     set name(value: string) {
         this._name = value;
     }
+
+    get path(): string {
+        return this._path;
+    }
+
+    set path(value: string) {
+        this._path = value;
+    }
 }
 
 function convertTabsTOJson(tabsJson) {
-    console.log(tabsJson._uuid);
-    if (tabsJson._uuid || tabsJson._childTabs || tabsJson._isPrivate || tabsJson._name) {
+    if (tabsJson._uuid || tabsJson._childTabs || tabsJson._isPrivate || tabsJson._name || tabsJson._path) {
         return new TabsTO({
             uuid: tabsJson._uuid,
             childTabs: tabsJson._childTabs,
             isPrivate: tabsJson._isPrivate,
-            name: tabsJson._name
+            name: tabsJson._name,
+            path: tabsJson._path
         });
     } else {
         return new TabsTO({
             uuid: tabsJson.uuid,
             childTabs: tabsJson.childTabs,
             isPrivate: tabsJson.isPrivate,
-            name: tabsJson.name
+            name: tabsJson.name,
+            path: tabsJson.path
         });
     }
 }
@@ -151,11 +168,17 @@ const tabSchema = new mongoose.Schema({
             },
             isPrivate: {
                 type: Boolean
+            },
+            childTabs: {
+                type: Array
             }
         }
     ],
     isPrivate: {
         type: Boolean
+    },
+    path: {
+        type: String
     }
 });
 

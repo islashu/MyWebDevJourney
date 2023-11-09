@@ -1,4 +1,4 @@
-import {TabsRepositoryProps} from '../models/database/tabsRespository.model';
+import {TabsRepositoryProps} from '../models/repository/tabsRepository.model';
 import {TabsControllerProps} from '../models/controller/tabsController.model';
 import {Request, Response} from 'express';
 import {OK} from '../util/codes/response.code';

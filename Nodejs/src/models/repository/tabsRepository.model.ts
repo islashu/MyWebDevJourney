@@ -6,5 +6,5 @@ export interface TabsRepositoryProps extends RepositoryProps {
     save(tab: any): Promise<void>;
     delete(tab: any): Promise<void>;
     update(tab: any): Promise<void>;
-    findbyUuid(uuid: string): Promise<TabsDocumentProps>;
+    findByUuid(uuid: string): Promise<TabsDocumentProps>;
 }
