@@ -29,6 +29,15 @@ useEffect(() => {
     }, []);
 
 
+This is how you write an async function in useEffect without a typescript error
+useEffect(() => {
+        async function triggerSubmit() {
+           await onSubmit()
+        }
+
+        triggerSubmit()
+        return () => {}
+    }, [onTriggerSubmit]);
 
 
 

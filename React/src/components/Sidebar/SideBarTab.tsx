@@ -1,15 +1,15 @@
 import React, {ReactElement, memo, useState} from 'react';
-import {ChildTabProps, TabsDocumentProps} from '../../../model/tab.model.ts';
+import {TabsDocumentProps} from '../../model/tab.model.ts';
 import SideBarChildTab from './SideBarChildTab.tsx';
 
 const SideBarTab = ({props}: {props: TabsDocumentProps}) => {
     const [isToggle, setIsToggle] = useState(false);
     const [test, setTest] = useState(false);
     /* Each sidebar tab can have multiple child tabs*/
-    const sideBarChildTabs: ChildTabProps[] = props.childTabs;
+    const sideBarChildTabs: [] = props.childTabs;
 
     const renderSideBarChildTabs = () => {
-        return sideBarChildTabs.map((sideBarChildTab: ChildTabProps, index: number) => {
+        return sideBarChildTabs.map((sideBarChildTab, index: number) => {
             return (
                 <div key={index}>
                     <SideBarChildTab props={sideBarChildTab}></SideBarChildTab>

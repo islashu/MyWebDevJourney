@@ -1,8 +1,14 @@
 import React from 'react';
-import SideBar from '../../components/Nav/Sidebar/SideBar.tsx';
 
 const ReferencePage = () => {
-    return <>Reference page!</>;
+    return (
+        <>
+            <div className="grid grid-cols-4 border-black border gap-4">
+                <div className="col-span-3 border-3 border-red-500">Reference page!</div>
+                <div className="col-span-1 border-3 border-red-500"> test </div>
+            </div>
+        </>
+    );
 };
 
 export default ReferencePage;

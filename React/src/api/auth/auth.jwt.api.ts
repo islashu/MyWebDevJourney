@@ -8,7 +8,6 @@ export const useHttpAuthJwt = () => {
     const {axiosPrivate} = useAxiosJwt();
 
     const httpAuthJwtProtected = async () => {
-        console.log('sending http protected route');
         return axiosPrivate
             .get('/auth/protected', {
                 withCredentials: true

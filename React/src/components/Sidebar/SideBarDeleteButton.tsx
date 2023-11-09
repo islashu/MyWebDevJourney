@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import {CiCircleMinus} from 'react-icons/ci';
-import DeleteConfirmationModal from '../../Modal/DeleteConfirmationModal.tsx';
-import {useHttpTabsJwt} from '../../../api/tabs/tabs.jwt.api.ts';
-import {TabsDocumentProps, TabsTO} from '../../../model/tab.model.ts';
-import {useHttpTabs} from '../../../api/tabs/tabs.api.ts';
+import DeleteConfirmationModal from '../Modal/DeleteConfirmationModal.tsx';
+import {useHttpTabsJwt} from '../../api/tabs/tabs.jwt.api.ts';
+import {TabsDocumentProps, TabsTO} from '../../model/tab.model.ts';
+import {useHttpTabs} from '../../api/tabs/tabs.api.ts';
 
 const SideBarDeleteButton = ({props, onDeleteTabs}: {props: TabsDocumentProps; onDeleteTabs: (tabs: TabsDocumentProps[]) => void}) => {
-    const [isToggle, setIsToggle] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const {httpTabsDeleteTab} = useHttpTabsJwt();
     const {httpTabsGetTabs} = useHttpTabs();
 
@@ -16,7 +16,7 @@ const SideBarDeleteButton = ({props, onDeleteTabs}: {props: TabsDocumentProps; o
             await httpTabsDeleteTab(tabsTO);
             const updatedTabs = await httpTabsGetTabs();
             onDeleteTabs(updatedTabs);
-            setIsToggle(false);
+            setIsDeleteModalOpen(false);
         } catch (err) {
             console.log('error deleting something');
         }
@@ -24,10 +24,14 @@ const SideBarDeleteButton = ({props, onDeleteTabs}: {props: TabsDocumentProps; o
 
     return (
         <>
-            <button onClick={() => setIsToggle(true)}>
+            <button onClick={() => setIsDeleteModalOpen(true)}>
                 <CiCircleMinus size={20} />
             </button>
-            <DeleteConfirmationModal isOpen={isToggle} onDelete={() => handleDelete()} onCancel={() => setIsToggle(false)}></DeleteConfirmationModal>
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onDelete={() => handleDelete()}
+                onCancel={() => setIsDeleteModalOpen(false)}
+            ></DeleteConfirmationModal>
         </>
     );
 };

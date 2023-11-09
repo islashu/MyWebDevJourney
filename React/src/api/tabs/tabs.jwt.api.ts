@@ -11,8 +11,7 @@ export const useHttpTabsJwt = () => {
                 return true;
             })
             .catch((err) => {
-                console.log(err);
-                return false;
+                throw new Error('Unable to create new tab');
             });
     };
 
@@ -23,8 +22,7 @@ export const useHttpTabsJwt = () => {
                 return true;
             })
             .catch((err) => {
-                console.log(err);
-                return false;
+                throw new Error('Unable to update new tab');
             });
     };
 
@@ -35,8 +33,7 @@ export const useHttpTabsJwt = () => {
                 return true;
             })
             .catch((err) => {
-                console.log(err);
-                return false;
+                throw new Error('Unable to delete new tab');
             });
     };
 

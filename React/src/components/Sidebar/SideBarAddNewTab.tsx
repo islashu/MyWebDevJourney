@@ -1,9 +1,9 @@
 import React, {Fragment, memo, useEffect, useRef, useState} from 'react';
-import ModalContainer from '../../Modal/ModalContainer.tsx';
+import ModalContainer from '../Modal/ModalContainer.tsx';
 import {FaCirclePlus} from 'react-icons/fa6';
-import {useHttpTabs} from '../../../api/tabs/tabs.api.ts';
-import {useHttpTabsJwt} from '../../../api/tabs/tabs.jwt.api.ts';
-import {TabsDocumentProps, TabsTO} from '../../../model/tab.model.ts';
+import {useHttpTabs} from '../../api/tabs/tabs.api.ts';
+import {useHttpTabsJwt} from '../../api/tabs/tabs.jwt.api.ts';
+import {TabsDocumentProps, TabsTO} from '../../model/tab.model.ts';
 import {useFieldArray, useForm} from 'react-hook-form';
 import {toast, ToastContainer} from 'react-toastify';
 
@@ -34,11 +34,7 @@ const SideBarAddNewTab = ({onAddNewTab}: {onAddNewTab: (tabs: TabsDocumentProps[
     type FormValues = {
         tabName: string;
         isPrivate: boolean;
-        childTabs: {
-            name: string;
-            path: string;
-            isPrivate: boolean;
-        }[];
+        childTabs: [];
     };
 
     useEffect(() => {
@@ -126,11 +122,11 @@ const SideBarAddNewTab = ({onAddNewTab}: {onAddNewTab: (tabs: TabsDocumentProps[
                                         className="w-32 rounded-xl border border-solid border-slate-900 p-3 text-black dark:border-none"
                                         type="text"
                                         id="childTabPath"
-                                        {...register(`childTabs.${index}.path`, {required: true})}
+                                        {...register(`childTabs.${index}.relativePath`, {required: true})}
                                         placeholder="Tab Path"
                                     />
                                 </section>
-                                {errors.childTabs?.[index]?.path && <span>This field is required</span>}
+                                {errors.childTabs?.[index]?.relativePath && <span>This field is required</span>}
 
                                 <section className="flex flex-col">
                                     <label htmlFor="childTabIsPrivate">Is Private</label>

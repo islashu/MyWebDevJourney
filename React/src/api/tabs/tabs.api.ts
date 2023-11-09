@@ -16,7 +16,7 @@ export const useHttpTabs = () => {
             .catch((err) => {
                 console.log(err);
                 // By doing this, we guarantee that the return value is not void, so we don't need to add a void to the types
-                return [];
+                throw new Error('Error with getting tabs');
             });
     };
 

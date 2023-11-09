@@ -7,6 +7,11 @@ interface Props {
     onDelete: () => void;
     onCancel: () => void;
 }
+
+/*
+ * isOpen is a trigger to open the modal by the parent, parent to create a toggle state and always pass in true
+ *
+ * */
 const DeleteConfirmationModal = ({isOpen, onDelete, onCancel}: Props) => {
     const dialogRef = useRef<null | HTMLDialogElement>(null);
 

@@ -1,9 +1,9 @@
 import React, {Fragment, useEffect, useRef, useState} from 'react';
-import ModalContainer from '../../Modal/ModalContainer.tsx';
+import ModalContainer from '../Modal/ModalContainer.tsx';
 import {CiEdit} from 'react-icons/ci';
-import {TabsDocumentProps, TabsTO} from '../../../model/tab.model.ts';
-import {useHttpTabsJwt} from '../../../api/tabs/tabs.jwt.api.ts';
-import {useHttpTabs} from '../../../api/tabs/tabs.api.ts';
+import {TabsDocumentProps, TabsTO} from '../../model/tab.model.ts';
+import {useHttpTabsJwt} from '../../api/tabs/tabs.jwt.api.ts';
+import {useHttpTabs} from '../../api/tabs/tabs.api.ts';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {useForm, SubmitHandler, useFieldArray} from 'react-hook-form';
@@ -40,13 +40,8 @@ const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onU
     type TabFormValues = {
         tabName: string;
         isPrivate: boolean;
-        childTabs: {
-            name: string;
-            path: string;
-            isPrivate: boolean;
-        }[];
+        childTabs: [];
     };
-    console.log('re-render');
     const onSubmit = async (data: TabFormValues): Promise<void> => {
         try {
             const newTabData: TabsTO = new TabsTO({
@@ -60,6 +55,7 @@ const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onU
                     await httpTabsUpdateTab(newTabData);
                     const updatedTabs = await httpTabsGetTabs();
                     setIsToggle(false);
+                    // Re-render tabs in sidebar to take in new tabs data
                     onUpdateTabs(updatedTabs);
                 },
                 {
@@ -127,11 +123,11 @@ const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onU
                                         className="w-32 rounded-xl border border-solid border-slate-900 p-3 text-black dark:border-none"
                                         type="text"
                                         id="childTabPath"
-                                        {...register(`childTabs.${index}.path`, {required: true})}
+                                        {...register(`childTabs.${index}.relativePath`, {required: true})}
                                         placeholder="Tab Path"
                                     />
                                 </section>
-                                {errors.childTabs?.[index]?.path && <span>This field is required</span>}
+                                {errors.childTabs?.[index]?.relativePath && <span>This field is required</span>}
 
                                 <section className="flex flex-col">
                                     <label htmlFor="childTabIsPrivate">Is Private</label>

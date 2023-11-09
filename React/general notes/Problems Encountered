@@ -27,7 +27,7 @@ we need to pass down the error to trigger the try catch block in another place.
 // Do we want the httplogin user to interact with redux or do you want to do it in the login page??
 we will perform all the necessary actions in the loginpage because from a new comer, the logic thing to findAllTabs all the login logic
 is in the login page as opposed to the auth api
-like in angular where we only access the service when we want to post things out
+like in angular where we only access the service when we want to postDataFromFeed things out
 
 
 

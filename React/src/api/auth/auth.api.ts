@@ -3,7 +3,7 @@ import {AxiosResponse} from 'axios';
 import {useReduxAuthSliceService} from '../../redux/slices/auth/authSlice.service';
 import {useRef} from 'react';
 import {AuthTO, AuthTOProps, convertAuthTOJson} from '../../model/auth.model.ts';
-import sideBarDeleteButton from '../../components/Nav/Sidebar/SideBarDeleteButton.tsx';
+import sideBarDeleteButton from '../../components/Sidebar/SideBarDeleteButton.tsx';
 import {plainToInstance} from 'class-transformer';
 
 // interceptor imported form config automatically comes with BASE_URL appended
@@ -19,7 +19,7 @@ import {plainToInstance} from 'class-transformer';
 export const useHttpAuth = () => {
     // Accessing the redux using the service
 
-    const httpAuthRegister = async (authTO: AuthTOProps, controllerSignal?: AbortSignal) => {
+    const httpAuthRegister = async (authTO: AuthTOProps, controllerSignal?: AbortSignal): Promise<AuthTOProps> => {
         return axios
             .post('/auth/register', {authTO: authTO}, {signal: controllerSignal})
             .then((response) => {
@@ -27,11 +27,11 @@ export const useHttpAuth = () => {
                 return authTO;
             })
             .catch((err) => {
-                console.log(err.response.data.message);
+                throw new Error('Error with registering user');
             });
     };
 
-    const httpAuthLogin = async (authTO: AuthTOProps, controllerSignal?: AbortSignal) => {
+    const httpAuthLogin = async (authTO: AuthTOProps, controllerSignal?: AbortSignal): Promise<AuthTOProps> => {
         return axios
             .post(
                 '/auth/login',
@@ -46,14 +46,13 @@ export const useHttpAuth = () => {
                 return authTO;
             })
             .catch((err) => {
-                console.log(err.response.data.message);
-                throw new Error('Error with connection');
+                throw new Error('Error with logging in user');
             });
     };
 
     /*
-     * This triggers the usage of the refresh token in the http header that was issued during the login process
-     * refresh token will be consumed to provide a longer accessToken which is send back to the client side.
+     * This triggers the usage of the isRefresh token in the http header that was issued during the login process
+     * isRefresh token will be consumed to provide a longer accessToken which is send back to the client side.
      *
      * Hence we are providing a refreshToken and receiving an access token as a response
      * */
@@ -66,12 +65,11 @@ export const useHttpAuth = () => {
                 return authTO.accessToken;
             })
             .catch((err) => {
-                console.log(err.response.data.message);
-                throw new Error('Error with connection');
+                throw new Error('Error with getting new access token');
             });
     };
 
-    const httpAuthLogout = async (authTO: AuthTOProps, controllerSignal?: AbortSignal) => {
+    const httpAuthLogout = async (authTO: AuthTOProps, controllerSignal?: AbortSignal): Promise<AuthTOProps> => {
         return axios
             .post('/auth/logout', {authTO: authTO}, {signal: controllerSignal})
             .then((response) => {
@@ -79,8 +77,7 @@ export const useHttpAuth = () => {
                 return authTO;
             })
             .catch((err) => {
-                console.log(err.response.data.message);
-                throw new Error('Error with connection');
+                throw new Error('Error with logging out');
             });
     };
 

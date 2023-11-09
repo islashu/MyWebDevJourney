@@ -41,17 +41,17 @@ const useAxiosJwt = () => {
 
                 if (error?.response?.status === 403 && !prevRequest?.sent) {
                     prevRequest.sent = true;
-                    // Getting the store refresh token given during the initialise authentication
+                    // Getting the store isRefresh token given during the initialise authentication
                     const refreshToken = getReduxAuthSliceRefreshToken();
                     const authTO = new AuthTO({refreshToken: refreshToken});
-                    /*Received a new access token using refresh Token*/
+                    /*Received a new access token using isRefresh Token*/
                     const newAccessToken: string | void = await httpAuthRefresh(authTO);
                     // Typescript: we can counteract the compiler from insisting that the methods below must take in a void as a type by doing this null check.
                     /*
-                     * We want to prevent removing the refresh token from redux if the new access token is not received. That's why we are checking for a new access token.
+                     * We want to prevent removing the isRefresh token from redux if the new access token is not received. That's why we are checking for a new access token.
                      * */
                     if (newAccessToken) {
-                        // Remove refresh token after usage
+                        // Remove isRefresh token after usage
                         console.log('Adding new access token to redux and axios header');
                         setReduxAuthSliceRefreshToken('');
                         setReduxAuthSliceAccessToken(newAccessToken);

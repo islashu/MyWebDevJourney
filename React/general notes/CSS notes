@@ -8,13 +8,16 @@ flex: all horizontal elements are now part of flex box
 flex-col - same as flex but now all elements are stack on top of one another, great for making forms
 
 
-mx-auto - centering div automatically relative to its parents, not the content within
+mx-auto - centering div automatically relative to its parents, not the editorContent within
     mx-auto, you will need to set the max-width of the container as it only work with fixed width
         - max-w-2xl
         - w-40
 
 To align the contents within a div and not the div itself:
-    text-center to align the content in the center of the div
+    text-center to align the editorContent in the center of the div
 
 If icon does not align, use flex to make them individual flex box then use justify center
+
+To create better positions and more dynamic layouts where the component adjust to the size of the screen
+- use grid + w-full
 

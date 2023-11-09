@@ -1,9 +1,9 @@
-import CustomButton from '../../CustomButton/CustomButton.tsx';
+import CustomButton from '../CustomButton/CustomButton.tsx';
 import {Link} from 'react-router-dom';
-import {useReduxAuthSliceService} from '../../../redux/slices/auth/authSlice.service.ts';
-import {useHttpAuth} from '../../../api/auth/auth.api.ts';
-import useAxiosJwt from '../../../api/config/interceptor/useAxiosJwt.ts';
-import {AuthTOProps} from '../../../model/auth.model.ts';
+import {useReduxAuthSliceService} from '../../redux/slices/auth/authSlice.service.ts';
+import {useHttpAuth} from '../../api/auth/auth.api.ts';
+import useAxiosJwt from '../../api/config/interceptor/useAxiosJwt.ts';
+import {AuthTOProps} from '../../model/auth.model.ts';
 
 const LoginNavBar = () => {
     const {getReduxAuthSliceIsUserAuthenticated, getReduxAuthSliceUsername, setReduxAuthSlice} = useReduxAuthSliceService();
