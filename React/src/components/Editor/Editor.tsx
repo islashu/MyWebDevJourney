@@ -103,7 +103,7 @@ export const Editor = ({
                         renderDataIntoEditor(content);
                     }
                 },
-                placeholder: 'Type here to write your postDataFromFeed...',
+                placeholder: 'Type here to write your post...',
                 inlineToolbar: true,
                 data: {blocks: []},
                 tools: {

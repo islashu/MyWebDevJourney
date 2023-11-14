@@ -8,6 +8,7 @@ import ReferencePage from './pages/ReferencePage/ReferencePage';
 import SignupPage from './pages/SignupPage/SignupPage';
 import React from 'react';
 import PostContainer from './components/PostContainer/PostContainer.tsx';
+import CreatePost from './components/Post/CreatePost.tsx';
 
 function App() {
     /*
@@ -23,7 +24,8 @@ function App() {
                     <Route path="/" element={<HomePage />}></Route>
                     <Route path="/reference" element={<SideBar />}>
                         <Route index element={<ReferencePage />}></Route>
-                        <Route path="/reference/:parentTab" element={<PostContainer />}>
+                        <Route path="/reference/:parentTab">
+                            <Route path="/reference/:parentTab/:childTab/createNewPost" element={<CreatePost></CreatePost>}></Route>
                             <Route path="/reference/:parentTab/:childTab" element={<PostContainer />}></Route>
                         </Route>
                     </Route>

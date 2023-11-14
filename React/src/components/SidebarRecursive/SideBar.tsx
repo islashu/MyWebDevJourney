@@ -55,14 +55,16 @@ const SideBar = () => {
         <>
             <div className="grid grid-cols-5 gap-4">
                 <nav className="relative">
-                    <div className="w-full text-sm text-slate-600 p-1 pl-2"> Getting Started</div>
+                    <div>
+                        <div className="w-full text-sm text-slate-600 p-1 pl-2 "> Getting Started</div>
 
-                    <section className=" flex flex-col w-full">
-                        {/*This nested count let us know where is the end of the tree if nested count = 0 = leaf node*/}
-                        {tabs.length > 0 ? <SideBarTab children={tabs} nestedCount={MAX_TAB_NESTED_COUNT}></SideBarTab> : null}
-                        {/* Add a new tab button*/}
-                        {validateIsAdmin() ? <SideBarAddNewTabButton></SideBarAddNewTabButton> : null}
-                    </section>
+                        <section className=" flex flex-col w-full">
+                            {/*This nested count let us know where is the end of the tree if nested count = 0 = leaf node*/}
+                            {tabs.length > 0 ? <SideBarTab children={tabs} nestedCount={MAX_TAB_NESTED_COUNT}></SideBarTab> : null}
+                            {/* Add a new tab button*/}
+                            {validateIsAdmin() ? <SideBarAddNewTabButton></SideBarAddNewTabButton> : null}
+                        </section>
+                    </div>
                 </nav>
                 <div className="col-span-4">
                     <Outlet></Outlet>

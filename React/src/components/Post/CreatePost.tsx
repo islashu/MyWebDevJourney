@@ -31,7 +31,7 @@ const CreatePost = () => {
     // A way to await on getting the editorContent data from editor since useState cannot be awaited
     const [lastAction, setLastAction] = useState<string>('');
     const navigate = useNavigate();
-    const fullPath = window.location.pathname;
+    const fullPath = window.location.pathname.replace('/createNewPost', '');
 
     /*
      * Extract the editor editorContent data from the editor to be store in the create postDataFromFeed component for usage
