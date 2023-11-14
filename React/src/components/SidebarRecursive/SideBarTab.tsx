@@ -16,6 +16,8 @@ const SideBarTab = ({nestedCount, children}) => {
     // The ability to click on a button and navigate to a new page can only exist on the youngest child tab
     const handleNavigate = (index) => {
         if (nestedCount === 0) {
+            console.log('side bar tab navigate');
+            console.log(children[index].path);
             navigate(children[index].path);
         }
     };
@@ -27,25 +29,28 @@ const SideBarTab = ({nestedCount, children}) => {
                     return (
                         <Fragment key={index}>
                             {validateChildSideBarPrivateAccess(parent) ? (
-                                <NavLink
-                                    onClick={() => handleNavigate(index)}
-                                    key={index}
-                                    color="cyan"
-                                    active={index === active}
-                                    label={parent.name}
-                                    childrenOffset={28}
-                                >
-                                    {/* Only show the edit button if the user is an admin, is the tab private and it is the parent to all tabs*/}
+                                <nav className="relative bg-slate-100">
                                     {nestedCount == MAX_TAB_NESTED_COUNT && validateIsAdmin() ? (
-                                        <>
+                                        <div className="flex justify-center absolute top-3 right-10">
                                             <SideBarEditButton tabData={parent}></SideBarEditButton>
                                             <SideBarDeleteButton tabData={parent}></SideBarDeleteButton>
-                                        </>
+                                        </div>
                                     ) : null}
-                                    {nestedCount > 0 && parent.childTabs ? (
-                                        <SideBarTab children={parent.childTabs} nestedCount={nestedCount - 1} />
-                                    ) : null}
-                                </NavLink>
+                                    <NavLink
+                                        onClick={() => handleNavigate(index)}
+                                        active={index}
+                                        label={parent.name}
+                                        childrenOffset={20}
+                                        variant="subtle"
+                                        className="text-xl font-medium"
+                                    >
+                                        {/* Only show the edit button if the user is an admin, is the tab private and it is the parent to all tabs*/}
+
+                                        {nestedCount > 0 && parent.childTabs ? (
+                                            <SideBarTab children={parent.childTabs} nestedCount={nestedCount - 1} />
+                                        ) : null}
+                                    </NavLink>
+                                </nav>
                             ) : null}
                         </Fragment>
                     );

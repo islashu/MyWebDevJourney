@@ -1,7 +1,7 @@
-import {Button, Modal} from '@mantine/core';
+import {Button, Group, Modal} from '@mantine/core';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useFieldArray, useForm} from 'react-hook-form';
-import {CiEdit} from 'react-icons/ci';
+import {TbSquareRoundedPlusFilled} from 'react-icons/tb';
 import {toast, ToastContainer} from 'react-toastify';
 import useEditForm from './edit form hooks/useEditForm.tsx';
 import EditFormFields from './edit form hooks/EditFormFields..tsx';
@@ -10,6 +10,8 @@ import {useHttpTabs} from '../../api/tabs/tabs.api.ts';
 import {TabsDocumentProps, TabsTO} from '../../model/tab.model.ts';
 import {useNavigate} from 'react-router-dom';
 import {useReduxTabsSliceService} from '../../redux/slices/tabs/tabsSlice.service.ts';
+import CustomButton from '../CustomComponents/common/CustomButton/CustomButton.tsx';
+import {useToast} from '../../hooks/useToast.tsx';
 
 const SideBarEditButton = ({tabData}: {tabData: TabsDocumentProps}) => {
     const [isToggle, setIsToggle] = useState(false);
@@ -19,6 +21,8 @@ const SideBarEditButton = ({tabData}: {tabData: TabsDocumentProps}) => {
     const navigate = useNavigate();
     const {setReduxTabsSliceIsRefresh, getReduxTabsSliceIsRefresh} = useReduxTabsSliceService();
     const refreshState = getReduxTabsSliceIsRefresh();
+    const [isLoading, setIsLoading] = useState(false);
+    const {toastSuccess, toastFailure, toastLoading, updateToastLoadingToSuccess, updateToastLoadingToFailure} = useToast();
 
     type TabFormValues = {
         uuid: string;
@@ -37,28 +41,33 @@ const SideBarEditButton = ({tabData}: {tabData: TabsDocumentProps}) => {
                 isPrivate: data.isPrivate,
                 path: data.path
             });
-
+            setIsLoading(true);
+            toastLoading('sideBarEdit');
             await httpTabsUpdateTab(newTabData);
-            const updatedTabs = await httpTabsGetTabs();
+            await httpTabsGetTabs();
             setIsToggle(false);
             setReduxTabsSliceIsRefresh(!refreshState);
+            updateToastLoadingToSuccess('sideBarEdit', 'Existing tab updated successful!', 'Tab updated!');
             navigate('/reference');
         } catch (err) {
             console.log(err);
+            updateToastLoadingToFailure('sideBarEdit', 'Existing tab updated unsuccessful!', 'Please try again');
         }
     };
 
     return (
         <>
-            <button onClick={() => setIsToggle(true)}>
-                <CiEdit size={20} />
+            <button className="text-blue-400" onClick={() => setIsToggle(true)}>
+                <TbSquareRoundedPlusFilled size={20} />
             </button>
 
             <Modal opened={isToggle} onClose={() => setIsToggle(!isToggle)} size="50%" title="Edit an existing tab">
                 <FormProvider {...methods}>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <EditFormFields tabData={tabData}></EditFormFields>
-                        <Button type="submit">Submit</Button>
+                        <Group justify="flex-end" mt="md">
+                            <CustomButton name="submit" type="submit"></CustomButton>
+                        </Group>
                     </form>
                 </FormProvider>
             </Modal>

@@ -7,14 +7,17 @@ import React, {FC, useEffect, useRef, useState} from 'react';
 import EditorOutput from '../Editor/EditorOutput';
 import {Link, useNavigate} from 'react-router-dom';
 import {Editor} from '../Editor/Editor.tsx';
-import {Button} from '@mantine/core';
+import {Alert, Button, Fieldset, Group, Modal, TextInput} from '@mantine/core';
 import {PostProps, PostTO} from '../../model/post.model.ts';
 import TextareaAutosize from 'react-textarea-autosize';
 import {useHttpPostsJwt} from '../../api/posts/posts.jwt.api.ts';
 import DeleteConfirmationModal from '../Modal/DeleteConfirmationModal.tsx';
-import {toast, ToastContainer} from 'react-toastify';
 import {useAuthoriser} from '../../hooks/useAuthoriser.ts';
 import {useForm} from 'react-hook-form';
+import {TbAlertCircleFilled} from 'react-icons/tb';
+import CustomButton from '../CustomComponents/common/CustomButton/CustomButton.tsx';
+import {useToast} from '../../hooks/useToast.tsx';
+import {StringSplicerBuilder} from '../../util/stringSplicerBuilder.ts';
 
 /*
  * Each postDataFromFeed will manage the layout of the postDataFromFeed
@@ -41,7 +44,7 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
     // Store the newPostData before sending it to the backend
     const [updatedPostData, setUpdatedPostData] = useState({} as PostProps);
     // Control the delete modal open or close state
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+    const [isToggle, setIsToggle] = useState<boolean>(false);
     // Get the authoriser functions to check if user is an admin before allowing certain functions
     const {validateIsAdmin} = useAuthoriser();
     // A way to trigger the editor to send back the editorContent data
@@ -50,6 +53,10 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
     const [lastAction, setLastAction] = useState<string>('');
     // Navigate to different pages
     const navigate = useNavigate();
+    // Toasts
+    const {toastSuccess, toastFailure, toastLoading, updateToastLoadingToSuccess, updateToastLoadingToFailure} = useToast();
+    // Loading state
+    const [isLoading, setIsLoading] = useState(false);
 
     // Populate the postDataFromFeed into the form when edit mode is turned on
     useEffect(() => {
@@ -62,14 +69,18 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
         try {
             // As standardised by the backend, the postDataFromFeed is sent as a TO object
             const postTO: PostTO = new PostTO({uuid: postDataFromFeed.uuid});
-
+            toastLoading('loadPostDelete');
+            setIsLoading(true);
             await httpPostDeletePost(postTO);
-            setIsDeleteModalOpen(false);
-            toast.success('Successfully deleted postDataFromFeed');
+            setIsToggle(false);
+            updateToastLoadingToSuccess('loadPostDelete', 'Delete successful', 'Post has been deleted!');
             // Refresh the postFeed on delete
+            setIsLoading(false);
             onUpdatePost();
             navigate(postDataFromFeed.path);
         } catch (err) {
+            updateToastLoadingToFailure('loadPostDelete', 'Delete failed', 'Please try again');
+            setIsLoading(false);
             console.log(err);
         }
     };
@@ -93,9 +104,13 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
 
         */
         try {
+            toastLoading('loadPostUpdate');
+            setIsLoading(true);
             setIsTriggerSubmit(!isTriggerSubmit);
             setLastAction('save');
         } catch (err) {
+            setIsLoading(false);
+            updateToastLoadingToFailure('loadPostUpdate', 'Update failed', 'Please try again');
             console.log(err);
         }
     };
@@ -115,30 +130,23 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
     useEffect(() => {
         const submit = async () => {
             //--------- Change logic for sending request to backend here ------------
-            await toast.promise(
-                async () => {
-                    return await httpPostUpdatePost(updatedPostData);
-                },
-                {
-                    pending: 'Updating tab...',
-                    success: 'Tab updated successfully',
-                    error: 'Error updating tab'
-                }
-            );
+            await httpPostUpdatePost(updatedPostData);
+            updateToastLoadingToSuccess('loadPostUpdate', 'Update successful', `Post < ${updatedPostData.title} > has been Updated!`);
+            setIsLoading(false);
             //--------- end of logic for sending request ------------
         };
 
         if (lastAction === 'save') {
             try {
-                console.log('Updated post data');
-                console.log(updatedPostData);
                 submit().then((response) => {
                     // Refresh the postFeed on update
                     onUpdatePost();
                     navigate(updatedPostData.path);
                 });
             } catch (err) {
+                updateToastLoadingToFailure('loadPostUpdate', 'Update failed', 'Please try again');
                 console.log(err);
+                setIsLoading(false);
             }
             return;
         }
@@ -146,83 +154,103 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
     /*--------------- End of Submit -------------------*/
 
     return (
-        <div className="rounded-md bg-white shadow">
-            <div className="px-6 py-4 flex justify-between">
-                <div className="w-0 flex-1">
-                    <TextareaAutosize
-                        readOnly={!isEditing}
-                        {...register('title', {required: true})}
-                        placeholder="Title"
-                        className="w-full resize-none appearance-none overflow-hidden bg-transparent text-5xl font-bold focus:outline-none"
-                    ></TextareaAutosize>
-
+        <div className=" max-w-5xl mx-auto relative">
+            <div className="px-6 py-1 relative  rounded-2xl border-separate border border-slate-300">
+                <section>
                     {isEditing ? (
                         <>
-                            <div className="border-blacks border w-40 h-8">
-                                <label className="font-bold" htmlFor="pathInput">
-                                    Path of new post:
-                                </label>
-                                <input
-                                    type="text"
-                                    id="tabPath"
-                                    className="bg-sky-300"
-                                    {...register('tabPath', {required: true})}
-                                    placeholder="Relative Path"
-                                ></input>
-                            </div>
+                            <TextInput
+                                label="Title"
+                                placeholder="Title"
+                                {...register('title', {required: true})}
+                                className="w-full resize-none appearance-none overflow-hidden bg-transparent text-5xl font-bold focus:outline-none pb-2"
+                            ></TextInput>
+                        </>
+                    ) : (
+                        <TextareaAutosize
+                            {...register('title', {required: true})}
+                            readOnly={!isEditing}
+                            placeholder="Title"
+                            className="w-full resize-none appearance-none overflow-hidden bg-transparent text-3xl font-bold focus:outline-none"
+                        ></TextareaAutosize>
+                    )}
+                </section>
+
+                <section className="w-full pb-2">
+                    {isEditing ? (
+                        <>
+                            <TextInput
+                                label="Path of new post"
+                                type="text"
+                                id="tabPath"
+                                {...register('tabPath', {required: true})}
+                                placeholder="Full path of post"
+                            ></TextInput>
                         </>
                     ) : null}
+                </section>
 
-                    <div className="max-h-40 min-w-400 mt-1 text-xs text-gray-500">
-                        {/* post.editorContent vs post.editorContent.editorContent*/}
-                        {isEditing && postDataFromFeed.editorContent ? (
-                            <>
-                                <Editor
-                                    content={postDataFromFeed.editorContent}
-                                    isEditMode={true}
-                                    onSubmitSetBlockData={(blocks) => handSubmitSetBlockData(blocks)}
-                                    onTriggerSubmit={isTriggerSubmit}
-                                ></Editor>
-                            </>
-                        ) : (
-                            <EditorOutput editorContent={postDataFromFeed.editorContent} />
-                        )}
-                    </div>
-                </div>
+                <section className="w-full">
+                    {/* post.editorContent vs post.editorContent.editorContent*/}
+                    {isEditing && postDataFromFeed.editorContent ? (
+                        <>
+                            <Editor
+                                content={postDataFromFeed.editorContent}
+                                isEditMode={true}
+                                onSubmitSetBlockData={(blocks) => handSubmitSetBlockData(blocks)}
+                                onTriggerSubmit={isTriggerSubmit}
+                            ></Editor>
+                        </>
+                    ) : (
+                        <EditorOutput editorContent={postDataFromFeed.editorContent} />
+                    )}
+                </section>
             </div>
 
             {/*Allows the switching from editorOutput <-> Editor depending on value*/}
+            <Group className="px-6 relative" justify="flex-end" mt="md">
+                <section className="text-xs">
+                    {'By: ' + (postDataFromFeed.author || 'Anonymous')}{' '}
+                    {'Created: ' + postDataFromFeed.createdAt.toString().split('T')[0] || 'No date'}{' '}
+                    {'Last Update: ' + postDataFromFeed.updatedAt.toString().split('T')[0] || 'No date'}
+                </section>
+            </Group>
+
             {validateIsAdmin() ? (
                 <>
-                    <div className="w-full mx-auto">
-                        {/* TODO: abstract into separate component*/}
-                        {isEditing ? (
-                            <Button type="submit" onClick={() => handleSave()}>
-                                Save
-                            </Button>
-                        ) : null}
-                        {isEditing ? <Button onClick={() => setIsEditing(false)}>Cancel</Button> : null}
-                    </div>
-
-                    <div>
-                        <>
-                            {/* TODO: abstract into separate component*/}
-                            {/* Edit button for postDataFromFeed*/}
-                            {isEditing ? null : <Button onClick={() => setIsEditing(true)}>Edit</Button>}
-                            {/* Delete button for postDataFromFeed*/}
-                            {isEditing ? null : <Button onClick={() => setIsDeleteModalOpen(true)}>Delete</Button>}
-                        </>
-                    </div>
-                    <div className="bg-gray-50 z-20 text-sm px-4 py-4 sm:px-6">
-                        {/*{postData.author}*/}
-                        {/*{postData.createdAt.toString()}*/}
-                        {/*{postData.updatedAt.toString()}*/}
-                    </div>
+                    <Group className="px-6 relative" justify="flex-end" mt="md">
+                        <section className="flex justify-between">
+                            {isEditing ? (
+                                <>
+                                    <Button type="submit" onClick={() => handleSave()}>
+                                        Save
+                                    </Button>
+                                    <Button onClick={() => setIsEditing(false)}>Cancel</Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button onClick={() => setIsEditing(true)}>Edit</Button>
+                                    <Button onClick={() => setIsToggle(true)}>Delete</Button>
+                                </>
+                            )}
+                        </section>
+                    </Group>
                 </>
             ) : null}
 
-            <DeleteConfirmationModal isOpen={isDeleteModalOpen} onDelete={() => handleDelete()} onCancel={() => setIsDeleteModalOpen(false)} />
-            <ToastContainer position={'top-right'} autoClose={1000} closeOnClick={true} />
+            <Modal opened={isToggle} onClose={() => setIsToggle(!isToggle)} size="50%" title="Delete existing tab">
+                <Fieldset>
+                    <div className="text-xl p-4">Are you sure you want to continue deleting this parent post?</div>
+                    <Alert className=" p-4 italic" title="Note" icon={<TbAlertCircleFilled size={20} />}>
+                        You can edit the post if you would like to amend the post.
+                    </Alert>
+                </Fieldset>
+
+                <Group justify="flex-end" mt="md">
+                    <CustomButton onClick={() => handleDelete()} color="red" name="Delete"></CustomButton>
+                    <CustomButton onClick={() => setIsToggle(false)} name="Cancel"></CustomButton>
+                </Group>
+            </Modal>
         </div>
     );
 };

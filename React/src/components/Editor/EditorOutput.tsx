@@ -39,7 +39,9 @@ const style = {
 
 // Only accepts editorContent, not blocks, if you ever get undefined error
 const EditorOutput = ({editorContent}) => {
-    return <>{editorContent !== undefined ? <Output style={style} className="text-sm" renderers={renderers} data={editorContent} /> : null}</>;
+    return (
+        <>{editorContent !== undefined ? <Output style={style} className="text-sm rounded-md" renderers={renderers} data={editorContent} /> : null}</>
+    );
 };
 
 export default EditorOutput;

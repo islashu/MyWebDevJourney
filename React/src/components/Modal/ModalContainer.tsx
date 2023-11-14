@@ -1,5 +1,4 @@
 import React, {useEffect, useRef, useState} from 'react';
-import CustomButton from '../CustomButton/CustomButton.tsx';
 
 type Props = {
     title: string;

@@ -5,7 +5,10 @@ import {useNavigate} from 'react-router-dom';
 import {useForm} from 'react-hook-form';
 import * as string_decoder from 'string_decoder';
 import {useFormValidator} from '../../hooks/useFormValidator.ts';
-import {ToastContainer, toast} from 'react-toastify';
+import {Fieldset, Group, PasswordInput, TextInput} from '@mantine/core';
+import CustomButton from '../../components/CustomComponents/common/CustomButton/CustomButton.tsx';
+import {notifications} from '@mantine/notifications';
+import {useToast} from '../../hooks/useToast.tsx';
 
 const USERNAME_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -15,6 +18,8 @@ const SignupPage = () => {
     const navigate = useNavigate();
     const {validatePassword, validateEmail} = useFormValidator();
     const {httpAuthRegister} = useHttpAuth();
+    const {toastSuccess, toastFailure, updateToastLoadingToSuccess, updateToastLoadingToFailure, toastLoading} = useToast();
+    const [isLoading, setIsLoading] = useState(false);
 
     const {
         register,
@@ -38,109 +43,71 @@ const SignupPage = () => {
                 password: data.password,
                 emailAddress: data.emailAddress
             });
-            await toast.promise(
-                async () => {
-                    const result = await httpAuthRegister(user);
-                    if (!result) throw new Error('Error creating user'); // TODO if receive error from server, throw error or something
-                },
-                {
-                    pending: 'Updating tab...',
-                    success: 'Tab updated successfully',
-                    error: 'Error updating tab'
-                }
-            );
-
+            setIsLoading(true);
+            toastLoading('signUpLoading');
+            const result = await httpAuthRegister(user);
+            if (!result) {
+                updateToastLoadingToFailure('signUpLoading', 'Error creating user', 'Please try again!');
+                throw new Error('Error creating user');
+            }
+            updateToastLoadingToSuccess('signUpLoading', 'User created', 'You can now login to verify your account!');
             navigate('/login');
+            setIsLoading(false);
         } catch (err) {
             console.log(err);
+            setIsLoading(false);
         }
-    };
-
-    const onTestSubmit = async (data: SignUpFormValues): Promise<void> => {
-        console.log(data);
     };
 
     return (
         <>
             <div className="min-h-screen">
-                <header>
-                    <section className="max-w-2xl mx-auto p-4 flex justify-between items-center">
-                        <h1 className="text-2xl font-medium mx-auto">Sign up Page</h1>
-                    </section>
-                </header>
+                <form className=" flex h-96 w-full" onSubmit={handleSubmit(onSubmit)}>
+                    <Fieldset className="m-auto w-1/3 min-h-fit" legend="Register an account">
+                        <TextInput label="Username" placeholder="username" {...register('username', {required: true})}></TextInput>
+                        <p>{errors.username && <span className="text-red-500">This field is required</span>}</p>
 
-                <form className="items-left mx-auto flex max-w-2xl flex-col gap-4 " onSubmit={handleSubmit(onSubmit)}>
-                    <label htmlFor="username" className={errors.username ? 'text-rose-700 font-bold' : ''}>
-                        Username:
-                    </label>
-                    <input
-                        className="w-full rounded-xl border border-solid border-slate-900 p-3 text-2xl text-black dark:border-none sm:text-3xl"
-                        type="text"
-                        id="username"
-                        {...register('username', {required: true})}
-                        autoComplete="on"
-                    />
-                    <p>{errors.username && <span>This field is required</span>}</p>
+                        <PasswordInput
+                            label="Password"
+                            placeholder="password"
+                            {...register('password', {
+                                required: true,
+                                validate: {
+                                    isValidPassword: (value) => validatePassword(value) || 'invalid Password'
+                                }
+                            })}
+                        ></PasswordInput>
+                        <p>{errors.password && <span className="text-red-500">This field is required</span>}</p>
 
-                    <label htmlFor="password" className={errors.password ? 'text-rose-700 font-bold' : ''}>
-                        Password:
-                    </label>
-                    <input
-                        className="w-full rounded-xl border border-solid border-slate-900 p-3 text-2xl text-black dark:border-none sm:text-3xl"
-                        type="password"
-                        id="password"
-                        autoComplete="on"
-                        {...register('password', {
-                            required: true,
-                            validate: {
-                                isValidPassword: (value) => validatePassword(value) || 'invalid Password'
-                            }
-                        })}
-                    />
-                    <p>{errors.password && <span>Password is invalid. Please Try again!</span>}</p>
+                        <PasswordInput
+                            label="Confirm Password"
+                            placeholder="password"
+                            {...register('confirmPassword', {
+                                required: true,
+                                validate: {
+                                    isValidPassword: (value) => value === getValues('password') || 'invalid confirm password'
+                                }
+                            })}
+                        ></PasswordInput>
+                        <p>{errors.confirmPassword && <span className="text-red-500">Password are not the same.</span>}</p>
 
-                    <label htmlFor="confirmPassword" className={errors.confirmPassword ? 'text-rose-700 font-bold' : ''}>
-                        Confirm Password:
-                    </label>
-                    <input
-                        className="w-full rounded-xl border border-solid border-slate-900 p-3 text-2xl text-black dark:border-none sm:text-3xl"
-                        type="password"
-                        id="confirmPassword"
-                        autoComplete="on"
-                        {...register('confirmPassword', {
-                            required: true,
-                            validate: {
-                                isValidPassword: (value) => value === getValues('password') || 'invalid confirm password'
-                            }
-                        })}
-                    />
-                    <p>{errors.confirmPassword && <span>Password are not the same.</span>}</p>
+                        <TextInput
+                            type="email"
+                            label="Email"
+                            {...register('emailAddress', {
+                                validate: {
+                                    isValidEmail: (value) => validateEmail(value) || 'invalid email'
+                                }
+                            })}
+                        ></TextInput>
+                        <p>{errors.emailAddress && <span className="text-red-500">Email is invalid.</span>}</p>
 
-                    <label htmlFor="emailAddress" className={errors.emailAddress ? 'text-rose-700 font-bold' : ''}>
-                        Email Address:{' '}
-                    </label>
-                    <input
-                        className="w-full rounded-xl border border-solid border-slate-900 p-3 text-2xl text-black dark:border-none sm:text-3xl"
-                        type="email"
-                        id="emailAddress"
-                        {...register('emailAddress', {
-                            validate: {
-                                isValidEmail: (value) => validateEmail(value) || 'invalid email'
-                            }
-                        })}
-                    />
-                    <p>{errors.emailAddress && <span>Email is invalid.</span>}</p>
-
-                    <label htmlFor="submit"></label>
-                    <button
-                        disabled={!isValid}
-                        className="border border-solid border-slate-900 text-black dark:border-none sm:text-2xl bg-gray-50 hover:enabled:bg-gray-300 transition duration-300 ease-in-out"
-                    >
-                        Submit
-                    </button>
+                        <Group justify="flex-end" mt="md">
+                            <CustomButton isDisabled={!isValid || isLoading} name="submit" type="submit"></CustomButton>
+                        </Group>
+                    </Fieldset>
                 </form>
             </div>
-            <ToastContainer position={'top-right'} autoClose={2000} closeOnClick={true} />
         </>
     );
 };

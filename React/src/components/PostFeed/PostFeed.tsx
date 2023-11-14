@@ -14,7 +14,6 @@ import {useHttpPosts} from '../../api/posts/posts.api.ts';
  * This is a container that will render out all the postDataFromFeed and will have infinite scroll.
  * */
 const PostFeed = () => {
-    const {tab} = useParams();
     // -----------------Test-----------------
     const initialPosts = [];
     // -----------------Test-----------------
@@ -22,6 +21,8 @@ const PostFeed = () => {
     const [isRerender, setIsRerender] = useState<boolean>(false);
     const lastPostRef = useRef<HTMLElement>(null);
     const {httpPostsGetPostWithPagination} = useHttpPosts();
+    const fullPath = window.location.pathname;
+    const {tab} = useParams();
     /*
      Equivalent to findDocumentById, locates the second last postDataFromFeed so it can render the next set of posts
     */
@@ -44,7 +45,7 @@ const PostFeed = () => {
     */
     useEffect(() => {
         remove();
-    }, [tab, isRerender]);
+    }, [tab, fullPath, isRerender]);
 
     // Infinite scroll
     let {data, fetchNextPage, isFetchingNextPage, remove} = useInfiniteQuery(
@@ -53,28 +54,15 @@ const PostFeed = () => {
         async ({pageParam = 1}) => {
             const INFINITE_SCROLL_PAGINATION_RESULTS = 2;
 
-            const relativePath = '/reference/' + tab;
+            const relativePath = fullPath;
             const paginationTO = new PaginationTO({path: relativePath, pageParam: pageParam, limit: POSTS_INFINITE_SCROLL_PAGINATION_RESULTS});
             try {
                 const posts: PostTOProps[] = await httpPostsGetPostWithPagination(paginationTO);
-                console.log('posts');
-                // console.log(posts);
-                // console.log(posts.length);
-                // console.log(posts[0]);
-                // console.log(posts[0].title);
-                // console.log(posts[0].editorContent);
-                // console.log(posts[0].uuid);
-                // console.log(posts[0].path);
-                console.log(posts.length > 0);
                 if (posts.length > 0) {
                     return posts;
                 }
                 return [];
             } catch (err) {}
-            // let start = (pageParam - 1) * POSTS_INFINITE_SCROLL_PAGINATION_RESULTS;
-            // let end = pageParam * POSTS_INFINITE_SCROLL_PAGINATION_RESULTS;
-            // let data = await getDataBasedOnURL('/reference/' + tab, start, end);
-            // console.log(data);
         },
         /*
          Appending the results above into an internal cache where pages and pageParams are stored in an ever increasing array. Note that this is design like so because infinite query is build specifically for pageParam only
@@ -100,7 +88,6 @@ const PostFeed = () => {
      ?? if callback returns a null or undefined from the infinite query then return the initialPosts
     */
     let posts = data?.pages.flatMap((page) => page) ?? initialPosts;
-    console.log('posts', posts);
 
     return (
         <>

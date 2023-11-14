@@ -24,6 +24,7 @@
     "@editorjs/table": "^2.2.2",
     "@mantine/core": "^7.1.7",
     "@mantine/hooks": "^7.1.7",
+    "@mantine/notifications": "^7.2.1",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",

@@ -2,9 +2,11 @@ import React, {useState} from 'react';
 import {TabsDocumentProps, TabsTO} from '../../model/tab.model.ts';
 import {useHttpTabsJwt} from '../../api/tabs/tabs.jwt.api.ts';
 import {useHttpTabs} from '../../api/tabs/tabs.api.ts';
-import {CiCircleMinus} from 'react-icons/ci';
-import {Modal} from '@mantine/core';
+import {TbCircleXFilled, TbAlertCircleFilled} from 'react-icons/tb';
+import {Alert, Fieldset, Group, Modal} from '@mantine/core';
 import {useReduxTabsSliceService} from '../../redux/slices/tabs/tabsSlice.service.ts';
+import CustomButton from '../CustomComponents/common/CustomButton/CustomButton.tsx';
+import {useToast} from '../../hooks/useToast.tsx';
 
 const SideBarDeleteButton = ({tabData}: {tabData: TabsDocumentProps}) => {
     const [isToggle, setIsToggle] = useState(false);
@@ -12,42 +14,45 @@ const SideBarDeleteButton = ({tabData}: {tabData: TabsDocumentProps}) => {
     const {httpTabsGetTabs} = useHttpTabs();
     const {setReduxTabsSliceIsRefresh, getReduxTabsSliceIsRefresh} = useReduxTabsSliceService();
     const refreshState = getReduxTabsSliceIsRefresh();
+    const {toastSuccess, toastFailure, toastLoading, updateToastLoadingToSuccess, updateToastLoadingToFailure} = useToast();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleDelete = async () => {
         try {
-            console.log('tabData', tabData);
             const tabsTO = new TabsTO({uuid: tabData.uuid});
+            toastLoading('loadDelete');
             if (!tabData.uuid) throw new Error('Missing uuid to delete');
             await httpTabsDeleteTab(tabsTO);
             const updatedTabs = await httpTabsGetTabs();
             // // isRefresh
-            console.log('uuid', tabData.uuid);
             setIsToggle(false);
             setReduxTabsSliceIsRefresh(!refreshState);
+            updateToastLoadingToSuccess('loadDelete', 'Delete successful', 'Tab has been deleted!');
         } catch (err) {
+            updateToastLoadingToFailure('loadDelete', 'Delete failed', 'Please try again');
             console.log('error deleting something');
         }
     };
 
     return (
         <>
-            <button onClick={() => setIsToggle(true)}>
-                <CiCircleMinus size={20} />
+            <button className="text-red-400" onClick={() => setIsToggle(true)}>
+                <TbCircleXFilled size={20} />
             </button>
             <Modal opened={isToggle} onClose={() => setIsToggle(!isToggle)} size="50%" title="Delete existing tab">
-                <div>
-                    <div className="text-4xl">
-                        Are you sure you want to continue deleting this parent tab. Deleting the parent tab, delete all child tabs.{' '}
+                <Fieldset>
+                    <div className="text-xl p-4">
+                        Are you sure you want to continue deleting this parent tab? Deleting the parent tab, deletes all child tabs!
                     </div>
-                    <div className="text-2xl">If you wish to delete a children tab, you can do so by updating the tab and remove the child tab.</div>
-                </div>
+                    <Alert className=" p-4 italic" title="Note" icon={<TbAlertCircleFilled size={20} />}>
+                        If you wish to delete a children tab, you can do so by updating the tab and remove the child tab.
+                    </Alert>
+                </Fieldset>
 
-                <button onClick={() => handleDelete()} className="py-1 px-2 rounded border-none bg-red-600">
-                    Delete
-                </button>
-                <button onClick={() => setIsToggle(false)} className="py-1 px-2 rounded border-none bg-blue-600">
-                    Cancel
-                </button>
+                <Group justify="flex-end" mt="md">
+                    <CustomButton onClick={() => handleDelete()} color="red" name="Delete"></CustomButton>
+                    <CustomButton onClick={() => setIsToggle(false)} name="Cancel"></CustomButton>
+                </Group>
             </Modal>
         </>
     );

@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {Editor} from '../Editor/Editor';
-import {Button} from '@mantine/core';
+import {Button, Fieldset, Group, TextInput} from '@mantine/core';
 import EditorOutput from '../Editor/EditorOutput.tsx';
 import TextareaAutosize from 'react-textarea-autosize';
 import PreviewSection from '../Preview/PreviewSection.tsx';
 import {PostProps} from '../../model/post.model.ts';
 import useStateWithCallback, {useStateWithCallbackLazy} from 'use-state-with-callback';
 import {useHttpPostsJwt} from '../../api/posts/posts.jwt.api.ts';
+import CustomButton from '../CustomComponents/common/CustomButton/CustomButton.tsx';
+import {useNavigate, useParams} from 'react-router-dom';
 
 const CreatePost = () => {
     const {
@@ -28,6 +30,8 @@ const CreatePost = () => {
     const {httpPostCreateNewPost} = useHttpPostsJwt();
     // A way to await on getting the editorContent data from editor since useState cannot be awaited
     const [lastAction, setLastAction] = useState<string>('');
+    const navigate = useNavigate();
+    const fullPath = window.location.pathname;
 
     /*
      * Extract the editor editorContent data from the editor to be store in the create postDataFromFeed component for usage
@@ -35,6 +39,13 @@ const CreatePost = () => {
     const handSubmitSetBlockData = (blocks) => {
         setEditorBlocks(blocks);
     };
+
+    /*
+     Set the entire path from root automatically based on the current params
+    */
+    useEffect(() => {
+        setValue('path', fullPath);
+    }, []);
 
     /* -------------- Preview-------------------*/
     const handlePreview = async () => {
@@ -75,7 +86,7 @@ const CreatePost = () => {
         if (lastAction === 'submit') {
             try {
                 const result = submit().then((response) => {
-                    console.log('Response came back');
+                    navigate(fullPath);
                 });
             } catch (err) {
                 console.log(err);
@@ -87,33 +98,44 @@ const CreatePost = () => {
     return (
         <>
             <title> Create a post</title>
-            <main className="max-w-2xl mx-auto">
-                <section>
+            <main className="max-w-2xl mx-auto shadow-xl">
+                <Fieldset legend="Create a new post">
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <label>Title</label>
-                        <TextareaAutosize
-                            placeholder="Title"
-                            {...register('title', {required: true})}
-                            className="w-full resize-none appearance-none overflow-hidden bg-transparent text-5xl font-bold focus:outline-none"
-                        ></TextareaAutosize>
+                        <section>
+                            <TextInput
+                                label="Title"
+                                placeholder="Title"
+                                {...register('title', {required: true})}
+                                className="w-full resize-none appearance-none overflow-hidden bg-transparent text-5xl font-bold focus:outline-none"
+                            ></TextInput>
+                        </section>
 
-                        <label>Content</label>
-                        <Editor
-                            isEditMode={false}
-                            onTriggerSubmit={isTriggerSubmit}
-                            onSubmitSetBlockData={(blocks) => handSubmitSetBlockData(blocks)}
-                        />
+                        <section>
+                            <TextInput label="Path of new post" placeholder="Path of new post" {...register('path', {required: true})}></TextInput>
+                        </section>
 
-                        <label htmlFor="pathInput">Path of new post</label>
-                        <input {...register('path', {required: true})}></input>
+                        <section>
+                            <label className="font-medium text-sm">Content</label>
+                            {/*Only triggers the migration of editorContent data from editor to createPost component */}
+                            <Editor
+                                isEditMode={false}
+                                onTriggerSubmit={isTriggerSubmit}
+                                onSubmitSetBlockData={(blocks) => handSubmitSetBlockData(blocks)}
+                            />
+                        </section>
 
-                        {/*Only triggers the migration of editorContent data from editor to createPost component */}
-                        <Button onClick={() => handlePreview()}>Preview</Button>
-                        <Button type="submit">Submit</Button>
+                        <Group justify="flex-end" mt="md">
+                            <section className="flex justify-between">
+                                <div className="mr-2">
+                                    <CustomButton onClick={() => handlePreview()} name="Preview"></CustomButton>
+                                </div>
+                                <Button type="submit">Submit</Button>
+                            </section>
+                        </Group>
                     </form>
-                </section>
-                <section>{newPost ? <PreviewSection post={newPost} /> : null}</section>
+                </Fieldset>
             </main>
+            <section className="max-w-2xl mx-auto shadow-xl my-4">{newPost ? <PreviewSection post={newPost} /> : null}</section>
         </>
     );
 };

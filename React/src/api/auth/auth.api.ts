@@ -46,7 +46,7 @@ export const useHttpAuth = () => {
                 return authTO;
             })
             .catch((err) => {
-                throw new Error('Error with logging in user');
+                return new AuthTO({});
             });
     };
 

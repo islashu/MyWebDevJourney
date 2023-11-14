@@ -2,7 +2,7 @@ import React from 'react';
 const HomePage = () => {
     return (
         <>
-            <section className="max-w-2xl mx-auto text-center">This is a home page.</section>
+            <section className="w-full mx-auto text-center border border-black">This is a home page.</section>
         </>
     );
 };

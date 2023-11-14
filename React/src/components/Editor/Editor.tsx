@@ -229,11 +229,11 @@ export const Editor = ({
     */
 
     return (
-        <div className="w-full p-4 bg-zinc-50 rounded-lg border border-zinc-200  min-w-[500px]">
-            <form id="reference-post-form" className="w-fit" onSubmit={handleSubmit(onSubmit)}>
+        <div className=" p-4 bg-zinc-50 rounded-lg border border-zinc-200">
+            <form id="reference-post-form" onSubmit={handleSubmit(onSubmit)}>
                 <div className="prose prose-stone dark:prose-invert">
                     {/*Editor*/}
-                    <div id="editor" className="min-h-[500px] rounded-lg" />
+                    <div id="editor" />
                     <p className="text-sm text-gray-500">
                         Use <kbd className="rounded-md border bg-muted px-1 text-xs uppercase">Tab</kbd> to open the command menu.
                     </p>

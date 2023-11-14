@@ -1,7 +1,9 @@
 import React, {FC, Fragment, useEffect} from 'react';
 import useEditFormField from './useEditFormField.tsx';
-import {Button} from '@mantine/core';
+import {Button, Checkbox, Fieldset, TextInput} from '@mantine/core';
 import {get} from 'react-hook-form';
+import CustomButton from '../../CustomComponents/common/CustomButton/CustomButton.tsx';
+import {CloseButton} from '@mantine/core';
 
 interface Props {
     prefix?: string;
@@ -57,45 +59,33 @@ const EditFormFields: FC<Props> = ({prefix = '', tabData = {}}) => {
 
     return (
         <>
-            <div>
-                {/*Add more fields here*/}
-                <div className="grid grid-cols-4 grid-row-3 w-1/2 p-2">
-                    {/*Add more fields here*/}
-                    <div className="grid col-span-3">
-                        <div className="border border-black w-full">
-                            <label className="font-bold px-3 ">Name</label>
-                            <input {...register(nameInputPath, {required: true})} placeholder="Name" />
-                        </div>
-                        {nameError && <span className="bg-red-600">This field is required</span>}
+            <div className="relative">
+                <section className="grid grid-cols-3">
+                    <Fieldset className="w-fit min-h-fit" legend="Fields">
+                        {/*Add more fields here*/}
+                        <TextInput label="Tab name" placeholder="Tab name" {...register(nameInputPath, {required: true})}></TextInput>
+                        <p>{nameError && <span className="text-red-500">This field is required</span>}</p>
 
-                        <div className="border border-black w-full">
-                            <label className="font-bold px-1 ">isPrivate</label>
-                            <input type="checkbox" {...register(isPrivateInputPath)} placeholder="isPrivate" />
-                        </div>
-                        <div className="border border-black w-full">
-                            <label className="font-bold px-3 ">path</label>
-                            <input {...register(pathInputPath, {required: true})} placeholder="path" />
-                        </div>
-                        {pathError && <span className="bg-red-600">This field is required</span>}
-                    </div>
+                        <TextInput label="Path" placeholder="Path" {...register(pathInputPath, {required: true})}></TextInput>
+                        <p>{pathError && <span className="text-red-500">This field is required</span>}</p>
 
-                    {/*--------- End --------*/}
-                    <Button className="grid col-span-1" type="button" onClick={() => addNewFormField()}>
-                        Add Tab
-                    </Button>
-                </div>
-                <div className="pl-6">
+                        <Checkbox className="p-2" label="Is Private?" {...register(isPrivateInputPath)}></Checkbox>
+                    </Fieldset>
+                    <Fieldset className="w-fit" legend="Options">
+                        <CustomButton className="grid col-span-1" type="button" onClick={() => addNewFormField()} name="Add Child Tab"></CustomButton>
+                    </Fieldset>
+                </section>
+
+                <div className="pl-4">
                     {fields.map((field, index: number) => (
                         <Fragment key={field.id}>
+                            <div className="absolute z-10 right-1/3">
+                                <CloseButton size="lg" className="absolute" type="button" onClick={() => removeFormField(index)}></CloseButton>
+                            </div>
                             <EditFormFields
                                 prefix={`${prefix}childTabs.${index}.`}
                                 tabData={tabData && tabData.childTabs ? tabData.childTabs[index] : {}}
                             />
-                            <div className="pb-1">
-                                <Button type="button" onClick={() => removeFormField(index)}>
-                                    Remove Name
-                                </Button>
-                            </div>
                         </Fragment>
                     ))}
                 </div>

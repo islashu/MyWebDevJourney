@@ -4,8 +4,10 @@ import {useHttpAuth} from '../../api/auth/auth.api';
 import {useReduxAuthSliceService} from '../../redux/slices/auth/authSlice.service';
 import {useHttpAuthJwt} from '../../api/auth/auth.jwt.api';
 import {AuthTO, AuthTOProps} from '../../model/auth.model';
-import {axiosPrivate} from '../../api/config/axios.ts';
 import {useForm} from 'react-hook-form';
+import {Button, Fieldset, Group, PasswordInput, TextInput} from '@mantine/core';
+import CustomButton from '../../components/CustomComponents/common/CustomButton/CustomButton.tsx';
+import {useToast} from '../../hooks/useToast.tsx';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -14,6 +16,8 @@ const LoginPage = () => {
     // Get global state from redux
     const {httpAuthLogin} = useHttpAuth();
     const {httpAuthJwtProtected} = useHttpAuthJwt();
+    const {toastSuccess, toastFailure, toastLoading, updateToastLoadingToSuccess, updateToastLoadingToFailure} = useToast();
+    const [isLoading, setIsLoading] = useState(false);
 
     const {
         register,
@@ -28,71 +32,52 @@ const LoginPage = () => {
         // send login information as http request to BE
         try {
             // Get back an accessToken and a refreshToken to store in redux
+            setIsLoading(true);
+            toastLoading('loadLogin');
             const authTO: AuthTOProps = new AuthTO({username: data.username, password: data.password});
+
             const {accessToken, refreshToken} = await httpAuthLogin(authTO);
+            if (!accessToken || !refreshToken) throw new Error('No token received');
+
             // Store in redux
-            await setReduxAuthSlice(true, accessToken, refreshToken, data.username, true).then((response) => {
+            await setReduxAuthSlice(true, accessToken, refreshToken, data.username, true).then(async (response) => {
+                updateToastLoadingToSuccess('loadLogin', 'Login successful', 'You are now logged in!');
                 navigate('/');
+                setIsLoading(false);
             });
         } catch (err) {
+            updateToastLoadingToFailure('loadLogin', 'Login failed', 'Please try again');
             console.log(err);
+            setIsLoading(false);
         }
-        // setIsLoading((prev) => !prev);
     };
 
-    // A test function
-    const handleProtectedSubmit = () => {
-        console.log('protected submit');
-        httpAuthJwtProtected();
-    };
-
-    // A test function
-    const handleReduxUpdate = () => {
-        console.log('redux auth object');
-        console.log(getReduxAuthSlice());
-    };
+    // // A test function
+    // const handleProtectedSubmit = () => {
+    //     console.log('protected submit');
+    //     httpAuthJwtProtected();
+    // };
+    //
+    // // A test function
+    // const handleReduxUpdate = () => {
+    //     console.log('redux auth object');
+    //     console.log(getReduxAuthSlice());
+    // };
 
     return (
         <>
-            <form className=" flex flex-col max-w-2xl mx-auto relative p-6" onSubmit={handleSubmit(onSubmit)}>
-                <label className={errors.username ? 'text-rose-700 font-bold' : ''} htmlFor="username">
-                    Username:
-                </label>
-                <input className="border border-solid border-black" type="text" id="username" {...register('username', {required: true})} />
-                {errors.username && <span>This field is required</span>}
+            <form className=" flex h-96 w-full" onSubmit={handleSubmit(onSubmit)}>
+                <Fieldset className="m-auto w-1/3 min-h-fit" legend="Sign into your account.">
+                    <TextInput label="Username" placeholder="username" {...register('username', {required: true})}></TextInput>
+                    {errors.username && <span className="text-red-500">This field is required</span>}
 
-                <label htmlFor="password" className={errors.password ? 'text-rose-700 font-bold' : ''}>
-                    Password:{' '}
-                </label>
-                <input className="border border-solid border-black" type="password" id="password" {...register('password', {required: true})} />
-                {errors.password && <span>This field is required</span>}
-                <label htmlFor="submit"></label>
-                <button
-                    disabled={!isValid}
-                    className="bg-gray-200 hover:enabled:bg-gray-300 transition duration-300 ease-in-out text-xl font-bold m-4"
-                    type="submit"
-                >
-                    submit
-                </button>
+                    <PasswordInput label="Password" placeholder="password" {...register('password', {required: true})}></PasswordInput>
+                    {errors.password && <span className="text-red-500">This field is required</span>}
+                    <Group justify="flex-end" mt="md">
+                        <CustomButton isDisabled={!isValid || isLoading} name="submit" type="submit"></CustomButton>
+                    </Group>
+                </Fieldset>
             </form>
-            <div className="flex flex-col max-w-2xl mx-auto">
-                <button
-                    className="bg-sky-300 hover:bg-sky-500 transition duration-300 ease-in-out text-xl font-bold my-1"
-                    onClick={() => {
-                        handleReduxUpdate();
-                    }}
-                >
-                    redux
-                </button>
-                <button
-                    className="bg-sky-300 hover:bg-sky-500 transition duration-300 ease-in-out text-xl font-bold"
-                    onClick={() => {
-                        handleProtectedSubmit();
-                    }}
-                >
-                    send via protected route
-                </button>
-            </div>
         </>
     );
 };
