@@ -14,7 +14,7 @@ export class PostsRepositoryMongo implements PostsRepositoryProps {
         }
 
         const result = await Post.find({path: path})
-            .sort()
+            .sort({createdAt: 'desc'})
             .limit(limit)
             .skip((pageParam - 1) * limit)
             .exec();
