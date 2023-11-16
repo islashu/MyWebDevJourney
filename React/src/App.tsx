@@ -9,6 +9,10 @@ import SignupPage from './pages/SignupPage/SignupPage';
 import React from 'react';
 import PostContainer from './components/PostContainer/PostContainer.tsx';
 import CreatePost from './components/Post/CreatePost.tsx';
+import ReferenceNavLayout from './layout/NavLayout/ReferenceNavLayout.tsx';
+import HomeNavLayout from './layout/NavLayout/HomeNavLayout.tsx';
+import Settings from './components/Settings/Settings.tsx';
+import SettingsNavLayout from './layout/NavLayout/SettingsNavLayout.tsx';
 
 function App() {
     /*
@@ -21,9 +25,14 @@ function App() {
         <>
             <Routes>
                 <Route element={<NavBar></NavBar>}>
-                    <Route path="/" element={<HomePage />}></Route>
-                    <Route path="/reference" element={<SideBar />}>
+                    <Route path="/" element={<HomeNavLayout />}>
+                        <Route index element={<HomePage />}></Route>
+                        <Route path="/createNewPost" element={<CreatePost></CreatePost>}></Route>
+                    </Route>
+
+                    <Route path="/reference" element={<ReferenceNavLayout />}>
                         <Route index element={<ReferencePage />}></Route>
+                        <Route path="/reference/createNewPost" element={<CreatePost></CreatePost>}></Route>
                         <Route path="/reference/:parentTab">
                             <Route path="/reference/:parentTab/:childTab/createNewPost" element={<CreatePost></CreatePost>}></Route>
                             <Route path="/reference/:parentTab/:childTab" element={<PostContainer />}></Route>
@@ -31,6 +40,9 @@ function App() {
                     </Route>
                     <Route path="/login" element={<LoginPage />}></Route>
                     <Route path="/signup" element={<SignupPage />}></Route>
+                    <Route path="/settings" element={<SettingsNavLayout />}>
+                        <Route index element={<Settings />}></Route>
+                    </Route>
                     <Route path="/*" element={<NotFoundPage />}></Route>
                 </Route>
             </Routes>
