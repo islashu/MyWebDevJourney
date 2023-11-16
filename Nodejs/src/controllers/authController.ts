@@ -13,6 +13,7 @@ import {ResponseError} from '../models/error.model';
 import {UserRepositoryProps} from '../models/repository/userRepository.model';
 import {AuthControllerProps} from '../models/controller/authController.model';
 import {v4 as uuidv4} from 'uuid';
+import {ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY} from '../config/auth/authOptions';
 
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
@@ -27,15 +28,23 @@ export class AuthController implements AuthControllerProps {
         const isMatch: boolean = await validatePassword(password, userFound.password);
 
         if (isMatch) {
-            const accessToken = issueAccessToken(userFound, 5);
-            const refreshToken = issueRefreshToken(userFound, 60 * 60 * 24);
+            const accessToken = issueAccessToken(userFound, ACCESS_TOKEN_EXPIRY);
+            const refreshToken = issueRefreshToken(userFound, REFRESH_TOKEN_EXPIRY);
             // Store auth isRefresh token in DB for later usage
             userFound.refreshToken = refreshToken;
             await db.save(userFound);
             // By doing this authTO controller completes the object for you.
-            const tokens: AuthTOProps = {accessToken: accessToken, refreshToken: refreshToken} as AuthTOProps;
-
-            return tokens;
+            const authTO: AuthTOProps = {
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                isAuthenticated: true,
+                isAdmin: userFound.isAdmin,
+                isSuperAdmin: userFound.isSuperAdmin,
+                username: userFound.username
+            } as AuthTOProps;
+            console.log('AuthTO');
+            console.log(authTO);
+            return authTO;
         } else {
             throw new ResponseError(UNAUTHORISED, 'Internal Server Error');
         }
@@ -95,4 +104,14 @@ export class AuthController implements AuthControllerProps {
     }
 
     constructor() {}
+
+    async handleUserDetailsUpdate(username: string, isAdmin: boolean, isSuperAdmin: boolean, db: UserRepositoryProps): Promise<AuthTOProps> {
+        if (!username || isAdmin === undefined || isAdmin === null || isSuperAdmin === undefined || isSuperAdmin === null)
+            throw new ResponseError(BAD_REQUEST, 'Missing fields');
+        const userFound: UserDocumentProps = await db.findByUsername(username);
+        userFound.isAdmin = isAdmin;
+        userFound.isSuperAdmin = isSuperAdmin;
+        await db.save(userFound);
+        return {username: username, isAdmin: isAdmin, isSuperAdmin: isSuperAdmin} as AuthTOProps;
+    }
 }

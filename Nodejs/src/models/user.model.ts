@@ -22,6 +22,8 @@ export interface UserDocumentProps {
     refreshToken: string;
     createdDT: Date;
     updatedDT: Date;
+    isAdmin?: boolean;
+    isSuperAdmin?: boolean;
 }
 
 export class UserDocument {
@@ -32,6 +34,8 @@ export class UserDocument {
     private _refreshToken: string;
     private _createdDT: Date;
     private _updatedDT: Date;
+    private _isAdmin?: boolean;
+    private _isSuperAdmin?: boolean;
 
     constructor(obj: {
         uuid?: string;
@@ -41,6 +45,8 @@ export class UserDocument {
         refreshToken?: string;
         createdDT?: Date;
         updatedDT?: Date;
+        isAdmin?: boolean;
+        isSuperAdmin?: boolean;
     }) {
         this._uuid = obj.uuid || '';
         this._username = obj.username || '';
@@ -49,6 +55,8 @@ export class UserDocument {
         this._refreshToken = obj.refreshToken || '';
         this._createdDT = obj.createdDT || new Date();
         this._updatedDT = obj.updatedDT || new Date();
+        this._isAdmin = obj.isAdmin || false;
+        this._isSuperAdmin = obj.isSuperAdmin || false;
     }
 
     get uuid(): string {
@@ -102,6 +110,22 @@ export class UserDocument {
     set updatedDT(value: Date) {
         this._updatedDT = value;
     }
+
+    get isAdmin(): boolean {
+        return this._isAdmin;
+    }
+
+    set isAdmin(value: boolean) {
+        this._isAdmin = value;
+    }
+
+    get isSuperAdmin(): boolean {
+        return this._isSuperAdmin;
+    }
+
+    set isSuperAdmin(value: boolean) {
+        this._isSuperAdmin = value;
+    }
 }
 
 // The collections/table created in mongoDB is dependent this, this will also contain other attributes to better check for certain properties like "required"
@@ -137,6 +161,14 @@ const userSchema = new mongoose.Schema({
     },
     updatedDt: {
         type: Date
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
+    isSuperAdmin: {
+        type: Boolean,
+        default: false
     }
 });
 

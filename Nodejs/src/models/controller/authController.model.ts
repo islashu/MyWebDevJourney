@@ -6,4 +6,5 @@ export interface AuthControllerProps {
     handleRegister(username: string, password: string, emailAddress: string, db: UserRepositoryProps): Promise<void>;
     handleRefreshToken(refreshToken: string, db: UserRepositoryProps): Promise<string>;
     handleLogout(username: string, db: UserRepositoryProps): Promise<void>;
+    handleUserDetailsUpdate(username: string, isAdmin: boolean, isSuperAdmin: boolean, db: UserRepositoryProps): Promise<AuthTOProps>;
 }

@@ -1,5 +1,11 @@
 import {authErrorHandlerMiddleware} from '../middlewares/authErrorHandler.middleware';
-import {authServiceLogin, authServiceLogout, authServiceRefreshToken, authServiceRegister} from '../services/authService';
+import {
+    authServiceLogin,
+    authServiceLogout,
+    authServiceRefreshToken,
+    authServiceRegister,
+    authServiceUpdateUserDetails
+} from '../services/authService';
 import {AuthControllerProps} from '../models/controller/authController.model';
 import {AuthController} from '../controllers/authController';
 import {Request, Response} from 'express';
@@ -49,6 +55,14 @@ router.post('/refresh', (req: Request, res: Response, next: any) => {
 router.post('/logout', (req: Request, res: Response, next: any) => {
     return authServiceLogout(req, res, next, authController, userRepositoryMongo);
 });
+
+router.post(
+    '/updateUserDetails',
+    [passport.authenticate('jwt', {session: false, failWithError: true}), authErrorHandlerMiddleware],
+    (req: Request, res: Response, next: any) => {
+        return authServiceUpdateUserDetails(req, res, next, authController, userRepositoryMongo);
+    }
+);
 
 // Test route: This work if you include the bearer
 router.get('/protected', [passport.authenticate('jwt', {session: false, failWithError: true}), authErrorHandlerMiddleware], (req, res, next) => {

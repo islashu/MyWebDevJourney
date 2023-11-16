@@ -10,6 +10,9 @@ export interface AuthTOProps {
     password: string;
     refreshToken: string;
     accessToken: string;
+    isAuthenticated?: boolean;
+    isAdmin?: boolean;
+    isSuperAdmin?: boolean;
 }
 
 export class AuthTO implements AuthTOProps {
@@ -21,6 +24,9 @@ export class AuthTO implements AuthTOProps {
     private _password: string;
     private _refreshToken: string;
     private _accessToken: string;
+    private _isAuthenticated?: boolean;
+    private _isAdmin?: boolean;
+    private _isSuperAdmin?: boolean;
 
     constructor(obj: {
         uuid?: string;
@@ -31,6 +37,9 @@ export class AuthTO implements AuthTOProps {
         password?: string;
         refreshToken?: string;
         accessToken?: string;
+        isAuthenticated?: boolean;
+        isAdmin?: boolean;
+        isSuperAdmin?: boolean;
     }) {
         this._uuid = obj.uuid || '';
         this._firstName = obj.firstName || '';
@@ -40,6 +49,9 @@ export class AuthTO implements AuthTOProps {
         this._password = obj.password || '';
         this._refreshToken = obj.refreshToken || '';
         this._accessToken = obj.accessToken || '';
+        this._isAuthenticated = obj.isAuthenticated || false;
+        this._isAdmin = obj.isAdmin || false;
+        this._isSuperAdmin = obj.isSuperAdmin || false;
     }
 
     get uuid(): string {
@@ -105,6 +117,30 @@ export class AuthTO implements AuthTOProps {
     set accessToken(value: string) {
         this._accessToken = value;
     }
+
+    get isAuthenticated(): boolean {
+        return this._isAuthenticated;
+    }
+
+    set isAuthenticated(value: boolean) {
+        this._isAuthenticated = value;
+    }
+
+    get isAdmin(): boolean {
+        return this._isAdmin;
+    }
+
+    set isAdmin(value: boolean) {
+        this._isAdmin = value;
+    }
+
+    get isSuperAdmin(): boolean {
+        return this._isSuperAdmin;
+    }
+
+    set isSuperAdmin(value: boolean) {
+        this._isSuperAdmin = value;
+    }
 }
 
 export function convertAuthTOJson(authJson: any): AuthTO {
@@ -116,7 +152,10 @@ export function convertAuthTOJson(authJson: any): AuthTO {
         authJson._username ||
         authJson._password ||
         authJson._refreshToken ||
-        authJson._accessToken
+        authJson._accessToken ||
+        authJson._isAuthenticated ||
+        authJson._isAdmin ||
+        authJson._isSuperAdmin
     ) {
         return new AuthTO({
             uuid: authJson._uuid,
@@ -126,7 +165,10 @@ export function convertAuthTOJson(authJson: any): AuthTO {
             username: authJson._username,
             password: authJson._password,
             refreshToken: authJson._refreshToken,
-            accessToken: authJson._accessToken
+            accessToken: authJson._accessToken,
+            isAuthenticated: authJson._isAuthenticated,
+            isAdmin: authJson._isAdmin,
+            isSuperAdmin: authJson._isSuperAdmin
         });
     } else {
         return new AuthTO({
@@ -137,7 +179,10 @@ export function convertAuthTOJson(authJson: any): AuthTO {
             username: authJson.username,
             password: authJson.password,
             refreshToken: authJson.refreshToken,
-            accessToken: authJson.accessToken
+            accessToken: authJson.accessToken,
+            isAuthenticated: authJson.isAuthenticated,
+            isAdmin: authJson.isAdmin,
+            isSuperAdmin: authJson.isSuperAdmin
         });
     }
 }

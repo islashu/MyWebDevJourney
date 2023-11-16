@@ -3,7 +3,7 @@ import {AuthTO, AuthTOProps, convertAuthTOJson} from '../models/auth.model';
 import {AuthControllerProps} from '../models/controller/authController.model';
 import {UserRepositoryProps} from '../models/repository/userRepository.model';
 import {ResponseError} from '../models/error.model';
-import {INTERNAL_SERVER_ERROR, OK, UNAUTHORISED} from '../util/codes/response.code';
+import {BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, UNAUTHORISED} from '../util/codes/response.code';
 
 /*
  * Note that It is the authService that is responsible for convert the data to a new authTO object.
@@ -20,9 +20,25 @@ export const authServiceLogin = async (
 ) => {
     try {
         const {username, password}: {username: string; password: string} = convertAuthTOJson(req.body.authTO) as AuthTOProps;
-        const {accessToken, refreshToken}: AuthTOProps = await authController.handleLogin(username, password, userRepository);
-        if (!accessToken || !refreshToken) throw new ResponseError(INTERNAL_SERVER_ERROR, 'Internal Server Error!');
-        const authTO: AuthTOProps = new AuthTO({accessToken: accessToken, refreshToken: refreshToken});
+        const authTOProps: AuthTOProps = await authController.handleLogin(username, password, userRepository);
+        if (
+            !authTOProps.accessToken ||
+            !authTOProps.refreshToken ||
+            authTOProps.isAdmin === undefined ||
+            authTOProps.isAdmin === null ||
+            !authTOProps.username ||
+            authTOProps.isSuperAdmin === null ||
+            authTOProps.isSuperAdmin === undefined
+        )
+            throw new ResponseError(INTERNAL_SERVER_ERROR, 'Internal Server Error!');
+        const authTO: AuthTOProps = new AuthTO({
+            accessToken: authTOProps.accessToken,
+            refreshToken: authTOProps.refreshToken,
+            isAdmin: authTOProps.isAdmin,
+            username: authTOProps.username,
+            isSuperAdmin: authTOProps.isSuperAdmin,
+            isAuthenticated: true
+        });
         console.log('authResponseTO', authTO);
         res.json(authTO);
     } catch (err) {
@@ -82,6 +98,29 @@ export const authServiceLogout = async (
         res.sendStatus(OK);
     } catch (err) {
         // Error handler middlewares will take care of it.
+        next(err);
+    }
+};
+
+export const authServiceUpdateUserDetails = async (
+    req: Request,
+    res: Response,
+    next: any,
+    authController: AuthControllerProps,
+    userRepository: UserRepositoryProps
+) => {
+    try {
+        const {username, isAdmin, isSuperAdmin}: {username: string; isAdmin?: boolean; isSuperAdmin?: boolean} = convertAuthTOJson(
+            req.body.authTO
+        ) as AuthTOProps;
+        const authTOProps: AuthTOProps = await authController.handleUserDetailsUpdate(username, isAdmin, isSuperAdmin, userRepository);
+        const authTO: AuthTOProps = new AuthTO({
+            username: authTOProps.username,
+            isAdmin: authTOProps.isAdmin,
+            isSuperAdmin: authTOProps.isSuperAdmin
+        });
+        res.json(authTO);
+    } catch (err) {
         next(err);
     }
 };

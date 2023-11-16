@@ -6,11 +6,11 @@ export interface PostDocumentProps {
     uuid?: string;
     title?: string; // textautoarea size
     editorContent?: any; // Blocks from editors
-    createdAt?: Date; // created by create postDataFromFeed
-    updatedAt?: Date; // created by create postDataFromFeed
+    createdAt?: Date; // created by create postData
+    updatedAt?: Date; // created by create postData
     author?: string; // To add first name or last name field in the future
     isPrivate?: boolean;
-    path?: string; // relativePath to categorise each postDataFromFeed to each child tab, we should edit the relativePath of the postDataFromFeed
+    path?: string; // relativePath to categorise each postData to each child tab, we should edit the relativePath of the postData
 }
 
 /*
