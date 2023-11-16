@@ -5,13 +5,15 @@ import {useInfiniteQuery} from '@tanstack/react-query';
 import axios from '../../api/config/axios.ts';
 import {Loader2} from 'lucide-react';
 import {mockdata1, mockdata3, mockdata2, getDataBasedOnURL} from '../../api/posts/mockdata.ts';
-import {useParams} from 'react-router-dom';
+import {Outlet, useParams} from 'react-router-dom';
 import {PaginationTO, PostTO, PostTOProps} from '../../model/post.model.ts';
 import {POSTS_INFINITE_SCROLL_PAGINATION_RESULTS} from '../config.ts';
 import {useHttpPosts} from '../../api/posts/posts.api.ts';
+import NoPostFeed from './NoPostFeed.tsx';
+import Footer from '../Footer/footer.tsx';
 
 /*
- * This is a container that will render out all the postDataFromFeed and will have infinite scroll.
+ * This is a container that will render out all the postData and will have infinite scroll.
  * */
 const PostFeed = () => {
     // -----------------Test-----------------
@@ -24,7 +26,7 @@ const PostFeed = () => {
     const fullPath = window.location.pathname;
     const {tab} = useParams();
     /*
-     Equivalent to findDocumentById, locates the second last postDataFromFeed so it can render the next set of posts
+     Equivalent to findDocumentById, locates the second last postData so it can render the next set of posts
     */
     const {ref, entry} = useIntersection({
         root: lastPostRef.current,
@@ -77,10 +79,10 @@ const PostFeed = () => {
         }
     );
 
-    // Check if the last postDataFromFeed is in view
+    // Check if the last postData is in view
     useEffect(() => {
         if (entry?.isIntersecting) {
-            fetchNextPage(); // Load more posts when the last postDataFromFeed comes into view
+            fetchNextPage(); // Load more posts when the last postData comes into view
         }
     }, [entry, fetchNextPage]);
 
@@ -91,28 +93,28 @@ const PostFeed = () => {
 
     return (
         <>
-            <title className="text-4xl font-bold">Post Feed</title>
-
-            <ul className="flex flex-col col-span-2 space-y-6">
-                {posts.length > 0
-                    ? posts.map((post, index) => {
-                          // console.log(index);
-                          if (index === posts.length - 1) {
-                              // Add a ref to the last postDataFromFeed in the list
-                              return (
-                                  <li key={index} ref={ref}>
-                                      <Post postDataFromFeed={post} onUpdatePost={() => setIsRerender(!isRerender)} />
-                                  </li>
-                              );
-                          } else {
-                              return (
-                                  <li key={index}>
-                                      <Post postDataFromFeed={post} onUpdatePost={() => setIsRerender(!isRerender)} />
-                                  </li>
-                              );
-                          }
-                      })
-                    : null}
+            <ul className="flex flex-col col-span-2 space-y-2">
+                {posts.length > 0 ? (
+                    posts.map((post, index) => {
+                        // console.log(index);
+                        if (index === posts.length - 1) {
+                            // Add a ref to the last postData in the list
+                            return (
+                                <li key={index} ref={ref}>
+                                    <Post postData={post} onUpdatePost={() => setIsRerender(!isRerender)} />
+                                </li>
+                            );
+                        } else {
+                            return (
+                                <li key={index}>
+                                    <Post postData={post} onUpdatePost={() => setIsRerender(!isRerender)} />
+                                </li>
+                            );
+                        }
+                    })
+                ) : (
+                    <NoPostFeed />
+                )}
 
                 {isFetchingNextPage && (
                     <li className="flex justify-center">

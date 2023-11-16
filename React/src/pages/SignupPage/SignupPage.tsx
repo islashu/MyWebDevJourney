@@ -6,7 +6,7 @@ import {useForm} from 'react-hook-form';
 import * as string_decoder from 'string_decoder';
 import {useFormValidator} from '../../hooks/useFormValidator.ts';
 import {Fieldset, Group, PasswordInput, TextInput} from '@mantine/core';
-import CustomButton from '../../components/CustomComponents/common/CustomButton/CustomButton.tsx';
+import CustomButton from '../../components/CustomMantineComponents/common/CustomButton/CustomButton.tsx';
 import {notifications} from '@mantine/notifications';
 import {useToast} from '../../hooks/useToast.tsx';
 
@@ -95,6 +95,7 @@ const SignupPage = () => {
                             type="email"
                             label="Email"
                             {...register('emailAddress', {
+                                required: true,
                                 validate: {
                                     isValidEmail: (value) => validateEmail(value) || 'invalid email'
                                 }

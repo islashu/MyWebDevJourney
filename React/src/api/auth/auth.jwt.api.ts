@@ -27,5 +27,20 @@ export const useHttpAuthJwt = () => {
             });
     };
 
-    return {httpAuthJwtProtected};
+    const httpAuthJwtUpdateUserDetails = async (authTO: AuthTOProps) => {
+        return axiosPrivate
+            .post('/auth/updateUserDetails', {authTO: authTO}, {})
+            .then(
+                // toast successfully registration
+                (response) => {
+                    const authTO: AuthTOProps = convertAuthTOJson(response.data);
+                    return authTO;
+                }
+            )
+            .catch((err) => {
+                throw new Error('Error with connection');
+            });
+    };
+
+    return {httpAuthJwtProtected, httpAuthJwtUpdateUserDetails};
 };

@@ -14,14 +14,14 @@ const PostContainer = () => {
 
     return (
         <Fragment>
-            <section className="grid grid-cols-4 gap-4 mx-auto ">
-                <div className="col-span-3">{<PostFeed />}</div>
+            <section className="mx-auto mb-10">
+                <div className="">{<PostFeed />}</div>
                 {/* TODO: Add styling for this so that it is center*/}
-                {/* Add a create postDataFromFeed mini nav on the right side, only admins are allowed to create postDataFromFeed*/}
+                {/* Add a create postData mini nav on the right side, only admins are allowed to create postData*/}
 
-                <div className="col-span-1">
+                <div className="">
                     <label htmlFor="createPost"></label>
-                    {validateIsAdmin() ? <MiniSideNavMenu onClickPost={() => navigate(createPostPath)} /> : null}
+                    {/*{validateIsAdmin() ? <MiniSideNavMenu onClickPost={() => navigate(createPostPath)} /> : null}*/}
                 </div>
             </section>
         </Fragment>

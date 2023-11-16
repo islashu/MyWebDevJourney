@@ -15,15 +15,20 @@ import DeleteConfirmationModal from '../Modal/DeleteConfirmationModal.tsx';
 import {useAuthoriser} from '../../hooks/useAuthoriser.ts';
 import {useForm} from 'react-hook-form';
 import {TbAlertCircleFilled} from 'react-icons/tb';
-import CustomButton from '../CustomComponents/common/CustomButton/CustomButton.tsx';
+import CustomButton from '../CustomMantineComponents/common/CustomButton/CustomButton.tsx';
 import {useToast} from '../../hooks/useToast.tsx';
 import {StringSplicerBuilder} from '../../util/stringSplicerBuilder.ts';
 
 /*
- * Each postDataFromFeed will manage the layout of the postDataFromFeed
+ * Each postData will manage the layout of the postData
  * */
-const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; onUpdatePost: () => void}) => {
-    // Each postDataFromFeed is essentially a form representation
+
+interface PostComponentProps {
+    postData: PostProps;
+    onUpdatePost: () => void;
+}
+const Post: FC<PostComponentProps> = ({postData, onUpdatePost}) => {
+    // Each postData is essentially a form representation
     // In react hook form, you don't need to record the onChange value, as it is done automatically by the library without re-rendering.
     const {
         register,
@@ -35,7 +40,7 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
         reset
     } = useForm();
 
-    // Control if postDataFromFeed is a read only postDataFromFeed or in edit mode
+    // Control if postData is a read only postData or in edit mode
     const [isEditing, setIsEditing] = useState<boolean>(false);
     // Store the editor data from the editor when editing mode is true
     const [editorBlocks, setEditorBlocks] = useState<any>([]);
@@ -58,17 +63,17 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
     // Loading state
     const [isLoading, setIsLoading] = useState(false);
 
-    // Populate the postDataFromFeed into the form when edit mode is turned on
+    // Populate the postData into the form when edit mode is turned on
     useEffect(() => {
-        setValue('title', postDataFromFeed.title);
-        setValue('tabPath', postDataFromFeed.path);
+        setValue('title', postData.title);
+        setValue('tabPath', postData.path);
     }, [isEditing]);
 
-    // Auto execute deleting of postDataFromFeed by sending http requests
+    // Auto execute deleting of postData by sending http requests
     const handleDelete = async () => {
         try {
-            // As standardised by the backend, the postDataFromFeed is sent as a TO object
-            const postTO: PostTO = new PostTO({uuid: postDataFromFeed.uuid});
+            // As standardised by the backend, the postData is sent as a TO object
+            const postTO: PostTO = new PostTO({uuid: postData.uuid});
             toastLoading('loadPostDelete');
             setIsLoading(true);
             await httpPostDeletePost(postTO);
@@ -77,7 +82,7 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
             // Refresh the postFeed on delete
             setIsLoading(false);
             onUpdatePost();
-            navigate(postDataFromFeed.path);
+            navigate(postData.path);
         } catch (err) {
             updateToastLoadingToFailure('loadPostDelete', 'Delete failed', 'Please try again');
             setIsLoading(false);
@@ -118,7 +123,7 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
     /*Helper function to await for editor to send back the editorContent data before creating the new Post Data to be sent to the backend*/
     useEffect(() => {
         const newPostData = {
-            uuid: postDataFromFeed.uuid,
+            uuid: postData.uuid,
             title: getValues('title'),
             editorContent: editorBlocks,
             path: getValues('tabPath')
@@ -154,7 +159,7 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
     /*--------------- End of Submit -------------------*/
 
     return (
-        <div className=" max-w-5xl mx-auto relative">
+        <div className=" max-w-4xl mx-auto relative">
             <div className="px-6 py-1 relative  rounded-2xl border-separate border border-slate-300">
                 <section>
                     {isEditing ? (
@@ -192,28 +197,28 @@ const Post = ({postDataFromFeed, onUpdatePost}: {postDataFromFeed: PostProps; on
 
                 <section className="w-full">
                     {/* post.editorContent vs post.editorContent.editorContent*/}
-                    {isEditing && postDataFromFeed.editorContent ? (
+                    {isEditing && postData.editorContent ? (
                         <>
                             <Editor
-                                content={postDataFromFeed.editorContent}
+                                content={postData.editorContent}
                                 isEditMode={true}
                                 onSubmitSetBlockData={(blocks) => handSubmitSetBlockData(blocks)}
                                 onTriggerSubmit={isTriggerSubmit}
                             ></Editor>
                         </>
                     ) : (
-                        <EditorOutput editorContent={postDataFromFeed.editorContent} />
+                        <div className="w-full">
+                            <EditorOutput editorContent={postData.editorContent} />
+                        </div>
                     )}
                 </section>
             </div>
 
             {/*Allows the switching from editorOutput <-> Editor depending on value*/}
             <Group className="px-6 relative" justify="flex-end" mt="md">
-                <section className="text-xs">
-                    {'By: ' + (postDataFromFeed.author || 'Anonymous')}{' '}
-                    {'Created: ' + postDataFromFeed.createdAt.toString().split('T')[0] || 'No date'}{' '}
-                    {'Last Update: ' + postDataFromFeed.updatedAt.toString().split('T')[0] || 'No date'}
-                </section>
+                <span className="text-xs">{'By: ' + (postData.author || 'Anonymous')} </span>
+                <span className="italic text-xs">{'Last Update: ' + postData.updatedAt.toString().split('T')[0] || 'No date'}</span>
+                <span className="italic text-xs">{'Last Update: ' + postData.updatedAt.toString().split('T')[0] || 'No date'}</span>
             </Group>
 
             {validateIsAdmin() ? (

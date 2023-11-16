@@ -1,10 +1,5 @@
 import axios from '../config/axios';
-import {AxiosResponse} from 'axios';
-import {useReduxAuthSliceService} from '../../redux/slices/auth/authSlice.service';
-import {useRef} from 'react';
 import {AuthTO, AuthTOProps, convertAuthTOJson} from '../../model/auth.model.ts';
-import sideBarDeleteButton from '../../components/Sidebar/SideBarDeleteButton.tsx';
-import {plainToInstance} from 'class-transformer';
 
 // interceptor imported form config automatically comes with BASE_URL appended
 

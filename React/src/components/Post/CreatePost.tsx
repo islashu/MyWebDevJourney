@@ -8,7 +8,7 @@ import PreviewSection from '../Preview/PreviewSection.tsx';
 import {PostProps} from '../../model/post.model.ts';
 import useStateWithCallback, {useStateWithCallbackLazy} from 'use-state-with-callback';
 import {useHttpPostsJwt} from '../../api/posts/posts.jwt.api.ts';
-import CustomButton from '../CustomComponents/common/CustomButton/CustomButton.tsx';
+import CustomButton from '../CustomMantineComponents/common/CustomButton/CustomButton.tsx';
 import {useNavigate, useParams} from 'react-router-dom';
 
 const CreatePost = () => {
@@ -31,10 +31,10 @@ const CreatePost = () => {
     // A way to await on getting the editorContent data from editor since useState cannot be awaited
     const [lastAction, setLastAction] = useState<string>('');
     const navigate = useNavigate();
-    const fullPath = window.location.pathname.replace('/createNewPost', '');
+    const fullPath = window.location.pathname.replace('/createNewPost', '') || '/';
 
     /*
-     * Extract the editor editorContent data from the editor to be store in the create postDataFromFeed component for usage
+     * Extract the editor editorContent data from the editor to be store in the create postData component for usage
      * */
     const handSubmitSetBlockData = (blocks) => {
         setEditorBlocks(blocks);
@@ -62,7 +62,7 @@ const CreatePost = () => {
             path: getValues('path')
         } as PostProps;
 
-        console.log('Setting new postDataFromFeed');
+        console.log('Setting new postData');
         setNewPost(newPost);
     }, [editorBlocks]);
     /* -------------- End of Preview-------------------*/

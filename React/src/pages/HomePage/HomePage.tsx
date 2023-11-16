@@ -1,8 +1,11 @@
 import React from 'react';
+import Footer from '../../components/Footer/footer';
+import PostFeed from '../../components/PostFeed/PostFeed.tsx';
+
 const HomePage = () => {
     return (
         <>
-            <section className="w-full mx-auto text-center border border-black">This is a home page.</section>
+            <div className="p-4">{<PostFeed />}</div>
         </>
     );
 };

@@ -6,7 +6,7 @@ import {useHttpAuthJwt} from '../../api/auth/auth.jwt.api';
 import {AuthTO, AuthTOProps} from '../../model/auth.model';
 import {useForm} from 'react-hook-form';
 import {Button, Fieldset, Group, PasswordInput, TextInput} from '@mantine/core';
-import CustomButton from '../../components/CustomComponents/common/CustomButton/CustomButton.tsx';
+import CustomButton from '../../components/CustomMantineComponents/common/CustomButton/CustomButton.tsx';
 import {useToast} from '../../hooks/useToast.tsx';
 
 const LoginPage = () => {
@@ -36,11 +36,11 @@ const LoginPage = () => {
             toastLoading('loadLogin');
             const authTO: AuthTOProps = new AuthTO({username: data.username, password: data.password});
 
-            const {accessToken, refreshToken} = await httpAuthLogin(authTO);
+            const {accessToken, refreshToken, isAdmin, username, isSuperAdmin} = await httpAuthLogin(authTO);
             if (!accessToken || !refreshToken) throw new Error('No token received');
 
             // Store in redux
-            await setReduxAuthSlice(true, accessToken, refreshToken, data.username, true).then(async (response) => {
+            await setReduxAuthSlice(true, accessToken, refreshToken, username, isAdmin, isSuperAdmin).then(async (response) => {
                 updateToastLoadingToSuccess('loadLogin', 'Login successful', 'You are now logged in!');
                 navigate('/');
                 setIsLoading(false);
@@ -52,7 +52,7 @@ const LoginPage = () => {
         }
     };
 
-    // // A test function
+    // A test function
     // const handleProtectedSubmit = () => {
     //     console.log('protected submit');
     //     httpAuthJwtProtected();

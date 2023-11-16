@@ -102,7 +102,7 @@ const SideBarEditButton = ({props, onUpdateTabs}: {props: TabsDocumentProps; onU
                         />
                     </section>
 
-                    <section className="flex flex-col justify-between border border-black border-solid">
+                    <section className="flex flex-col justify-center border border-black border-solid">
                         {childTabsFields.map((field, index) => (
                             <div className="flex" key={field.id}>
                                 <section className="flex flex-col">

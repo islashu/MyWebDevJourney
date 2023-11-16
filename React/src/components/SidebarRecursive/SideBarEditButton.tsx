@@ -10,7 +10,7 @@ import {useHttpTabs} from '../../api/tabs/tabs.api.ts';
 import {TabsDocumentProps, TabsTO} from '../../model/tab.model.ts';
 import {useNavigate} from 'react-router-dom';
 import {useReduxTabsSliceService} from '../../redux/slices/tabs/tabsSlice.service.ts';
-import CustomButton from '../CustomComponents/common/CustomButton/CustomButton.tsx';
+import CustomButton from '../CustomMantineComponents/common/CustomButton/CustomButton.tsx';
 import {useToast} from '../../hooks/useToast.tsx';
 
 const SideBarEditButton = ({tabData}: {tabData: TabsDocumentProps}) => {

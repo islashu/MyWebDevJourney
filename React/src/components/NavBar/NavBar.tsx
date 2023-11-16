@@ -2,6 +2,7 @@ import {Link, Outlet, useParams} from 'react-router-dom';
 import LoginNavBar from '../LoginNavBar/LoginNavBar.tsx';
 import React, {useEffect, useState} from 'react';
 import {FaReact} from 'react-icons/fa';
+import NetworkNavBar from '../NetworkingNevBar/NetworkNavBar.tsx';
 
 /*We are not going to dynamically load the navbar items as an array as there is no need for it.
  * It complicates the structure as well
@@ -16,8 +17,8 @@ const navBarItems = [
 const NavBar = () => {
     return (
         <>
-            <div className="relative">
-                <nav className="w-full p-2 mx-auto flex justify-center gap-20 text-xl font-medium color text-slate-600 sticky">
+            <div className="relative self-start">
+                <nav className="w-full p-2 mx-auto flex justify-center gap-20 text-xl font-medium color text-slate-600 top-0 sticky bg-white bg-opacity-100 z-50">
                     <span className="text-blue-500">
                         <Link to="/">
                             <FaReact size={30} />
@@ -35,6 +36,7 @@ const NavBar = () => {
                         );
                     })}
                     <LoginNavBar></LoginNavBar>
+                    <NetworkNavBar></NetworkNavBar>
                 </nav>
 
                 {/*Do not remove this*/}

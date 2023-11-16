@@ -5,7 +5,7 @@ import {useHttpTabs} from '../../api/tabs/tabs.api.ts';
 import {TbCircleXFilled, TbAlertCircleFilled} from 'react-icons/tb';
 import {Alert, Fieldset, Group, Modal} from '@mantine/core';
 import {useReduxTabsSliceService} from '../../redux/slices/tabs/tabsSlice.service.ts';
-import CustomButton from '../CustomComponents/common/CustomButton/CustomButton.tsx';
+import CustomButton from '../CustomMantineComponents/common/CustomButton/CustomButton.tsx';
 import {useToast} from '../../hooks/useToast.tsx';
 
 const SideBarDeleteButton = ({tabData}: {tabData: TabsDocumentProps}) => {

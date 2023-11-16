@@ -2,7 +2,7 @@ import React, {FC, Fragment, useEffect} from 'react';
 import useAddFormField from './useAddFormField.tsx';
 import {Button, Checkbox, CloseButton, Fieldset, TextInput} from '@mantine/core';
 import {get} from 'react-hook-form';
-import CustomButton from '../../CustomComponents/common/CustomButton/CustomButton.tsx';
+import CustomButton from '../../CustomMantineComponents/common/CustomButton/CustomButton.tsx';
 
 interface Props {
     prefix?: string;

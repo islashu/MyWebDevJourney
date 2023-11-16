@@ -9,6 +9,7 @@ import SideBarEditButton from './SideBarEditButton.tsx';
 import SideBarDeleteButton from './SideBarDeleteButton.tsx';
 import {useAuthoriser} from '../../hooks/useAuthoriser.ts';
 import {sideBarTabs} from '../../../test data/data.tsx';
+import Footer from '../Footer/footer.tsx';
 /*
  * For this to exist along side every other component, you have to use an outlet
  * */
@@ -62,7 +63,7 @@ const SideBar = () => {
     return (
         <>
             <body className="grid grid-cols-5 gap-4">
-                <nav className="border-2 border-black">
+                <nav className="">
                     <label className="w-full border-solid border-black border text-center text-2xl font-bold"> Side bar</label>
                     <section className=" flex flex-col w-full border border-solid border-black">
                         {tabs.length > 0

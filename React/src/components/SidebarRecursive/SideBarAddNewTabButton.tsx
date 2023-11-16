@@ -10,7 +10,7 @@ import {useHttpTabs} from '../../api/tabs/tabs.api.ts';
 import {TabsTO} from '../../model/tab.model.ts';
 import {useReduxTabsSliceService} from '../../redux/slices/tabs/tabsSlice.service.ts';
 import {useToast} from '../../hooks/useToast.tsx';
-import CustomButton from '../CustomComponents/common/CustomButton/CustomButton.tsx';
+import CustomButton from '../CustomMantineComponents/common/CustomButton/CustomButton.tsx';
 
 const SideBarAddNewTabButton = () => {
     const [isToggle, setIsToggle] = useState<boolean>(false);

@@ -1,4 +1,4 @@
 Api contains the services that interacts the client and the server
 
-e.g. if you need to postDataFromFeed anything, connect to the api component to utilise the findAllTabs/postDataFromFeed/delete/update functions
+e.g. if you need to postData anything, connect to the api component to utilise the findAllTabs/postData/delete/update functions
 

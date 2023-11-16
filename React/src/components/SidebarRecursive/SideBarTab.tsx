@@ -16,8 +16,6 @@ const SideBarTab = ({nestedCount, children}) => {
     // The ability to click on a button and navigate to a new page can only exist on the youngest child tab
     const handleNavigate = (index) => {
         if (nestedCount === 0) {
-            console.log('side bar tab navigate');
-            console.log(children[index].path);
             navigate(children[index].path);
         }
     };
