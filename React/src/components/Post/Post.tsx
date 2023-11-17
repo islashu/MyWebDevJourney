@@ -19,6 +19,19 @@ import CustomButton from '../CustomMantineComponents/common/CustomButton/CustomB
 import {useToast} from '../../hooks/useToast.tsx';
 import {StringSplicerBuilder} from '../../util/stringSplicerBuilder.ts';
 
+// If empty postData incase of server has issues sending back data
+const emptyPostData = {
+    uuid: '',
+    title: '',
+    editorContent: {
+        blocks: []
+    },
+    path: '',
+    updatedAt: '',
+    createdAt: '',
+    author: ''
+};
+
 /*
  * Each postData will manage the layout of the postData
  * */
@@ -27,7 +40,7 @@ interface PostComponentProps {
     postData: PostProps;
     onUpdatePost: () => void;
 }
-const Post: FC<PostComponentProps> = ({postData, onUpdatePost}) => {
+const Post: FC<PostComponentProps> = ({postData = emptyPostData, onUpdatePost}) => {
     // Each postData is essentially a form representation
     // In react hook form, you don't need to record the onChange value, as it is done automatically by the library without re-rendering.
     const {

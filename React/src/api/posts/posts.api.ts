@@ -4,7 +4,6 @@ import axios from '../config/axios';
 export const useHttpPosts = () => {
     const httpPostsGetPostWithPagination = async (PaginationTO: PaginationTOProps, controllerSignal?: AbortSignal) => {
         // Pass in pageParam
-        console.log('getting posts with pagination', PaginationTO);
         return await axios
             .get('/posts/getPostsWithPagination', {
                 signal: controllerSignal,

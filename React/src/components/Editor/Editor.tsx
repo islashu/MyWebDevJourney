@@ -10,7 +10,8 @@ import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import {Button} from '@mantine/core';
 import {BlockProps, PostProps} from '../../model/post.model.ts';
-import {uploadFiles} from '../../util/uploadthing.ts';
+import {useHttpImagesJwt} from '../../api/images/images.jwt.api.ts';
+import {ImageMultipartUploadResponseTOProps} from '../../model/image.model.ts';
 
 interface EditorProps {
     // If you want to render prev data into the editor, pass it in here
@@ -34,6 +35,8 @@ export const Editor = ({
     onTriggerSubmit: boolean;
     onSubmitSetBlockData?: (blocks: any) => void;
 }) => {
+    // image upload api hook
+    const {httpImageUploadImage} = useHttpImagesJwt();
     const {
         handleSubmit,
         formState: {errors}
@@ -155,6 +158,30 @@ export const Editor = ({
                     checklist: {
                         class: Checklist,
                         inlineToolbar: true
+                    },
+                    image: {
+                        class: ImageTool,
+                        config: {
+                            uploader: {
+                                // Drag and drop or by browse upload
+                                async uploadByFile(file) {
+                                    console.log('file');
+                                    console.log(file);
+                                    return await httpImageUploadImage(file).then((res: ImageMultipartUploadResponseTOProps) => {
+                                        return res;
+                                    });
+                                }
+                                // uploadByUrl(url) {
+                                //     return {
+                                //         success: 1,
+                                //         file: {
+                                //             url: 'https://static.wikia.nocookie.net/shrek/images/9/9b/GoodShrekImage.png/revision/latest/scale-to-width-down/1200?cb=20201220080410'
+                                //             // any other images data you want to store, such as width, height, color, extension, etc
+                                //         }
+                                //     };
+                                // }
+                            }
+                        }
                     }
                     // warning: {
                     //     class: Warning,
@@ -176,29 +203,8 @@ export const Editor = ({
                     // },
                     // nestedchecklist: NestedCheckList
                     /*
-                     * TODO: Fix the image uploader
+                     * TODO: Fix the images uploader
                      * */
-                    // image: {
-                    //     class: ImageTool,
-                    //     config: {
-                    //         uploader: {
-                    //             // Automatic upload by Editorjs when user tries to upload a file
-                    //             async uploadByFile(file: File) {
-                    //                 let array = [];
-                    //                 array.push(file);
-                    //                 // upload to uploadthing
-                    //                 const [res] = await uploadFiles(array, 'imageUploader');
-                    //
-                    //                 return {
-                    //                     success: 1,
-                    //                     file: {
-                    //                         url: res.url
-                    //                     }
-                    //                 };
-                    //             }
-                    //         }
-                    //     }
-                    // }
                 }
             });
         }

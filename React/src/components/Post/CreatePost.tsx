@@ -10,6 +10,7 @@ import useStateWithCallback, {useStateWithCallbackLazy} from 'use-state-with-cal
 import {useHttpPostsJwt} from '../../api/posts/posts.jwt.api.ts';
 import CustomButton from '../CustomMantineComponents/common/CustomButton/CustomButton.tsx';
 import {useNavigate, useParams} from 'react-router-dom';
+import {useReduxAuthSliceService} from '../../redux/slices/auth/authSlice.service.ts';
 
 const CreatePost = () => {
     const {
@@ -32,6 +33,7 @@ const CreatePost = () => {
     const [lastAction, setLastAction] = useState<string>('');
     const navigate = useNavigate();
     const fullPath = window.location.pathname.replace('/createNewPost', '') || '/';
+    const {getReduxAuthSliceUsername} = useReduxAuthSliceService();
 
     /*
      * Extract the editor editorContent data from the editor to be store in the create postData component for usage
@@ -57,6 +59,7 @@ const CreatePost = () => {
     /*Helper function to wait for editor to send back the editorContent data before creating the new post data to be send to the backends*/
     useEffect(() => {
         const newPost = {
+            author: getReduxAuthSliceUsername(),
             title: getValues('title'),
             editorContent: editorBlocks,
             path: getValues('path')

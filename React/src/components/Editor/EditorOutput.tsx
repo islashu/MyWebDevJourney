@@ -36,7 +36,7 @@ const style = {
 // Based on the editorContent, if the editorContent key matches the renderers, the renderer will render the custom css instead of the default css of the editor output
 
 // TODO:
-//  Be able to render image
+//  Be able to render images
 
 // Only accepts editorContent, not blocks, if you ever get undefined error
 const EditorOutput = ({editorContent}) => {
