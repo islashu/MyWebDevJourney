@@ -1,3 +1,5 @@
+import {S3Client} from '@aws-sdk/client-s3';
+
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,6 +9,7 @@ const {createCustomLogger} = require('./util/loggers/customLogger');
 import userRoutes = require('./routes/authRoutes');
 import tabsRoutes = require('./routes/tabsRoutes');
 import postsRoutes = require('./routes/postsRoutes');
+import imagesRoutes = require('./routes/imagesRoutes');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middlewares/credentials.middleware');
@@ -46,6 +49,7 @@ app.use(express.json());
 app.use('/auth', userRoutes);
 app.use('/tabs', tabsRoutes);
 app.use('/posts', postsRoutes);
+app.use('/images', imagesRoutes);
 
 // Global error handler
 app.use(errorHandlerMiddleware);
