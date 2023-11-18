@@ -36,7 +36,6 @@
     "@reduxjs/toolkit": "1.9.7",
     "@tailwindcss/typography": "^0.5.10",
     "@tanstack/react-query": "4.29.11",
-    "@uploadthing/react": "^5.7.0",
     "axios": "1.5.1",
     "class-transformer": "0.5.1",
     "class-variance-authority": "^0.7.0",
