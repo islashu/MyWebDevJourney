@@ -30,7 +30,6 @@ jobs:
         cache: 'npm'
         cache-dependency-path: './React/package-lock.json'
 
-    - run: git config --global url."git@github.com:".insteadOf git://github.com/
     - run: npm ci
       working-directory: './React'
     - run: npm run build --if-present
