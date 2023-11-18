@@ -31,5 +31,7 @@ jobs:
         cache-dependency-path: './React/package-lock.json'
 
     - run: npm ci
+      working-directory: './React'
     - run: npm run build --if-present
+      working-directory: './React'
 
