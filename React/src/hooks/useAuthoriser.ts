@@ -9,7 +9,7 @@ import {TabsDocumentProps} from '../model/tab.model.ts';
  * */
 export const useAuthoriser = () => {
     const {getReduxAuthSliceIsAdmin} = useReduxAuthSliceService();
-    const isAdmin = getReduxAuthSliceIsAdmin();
+    const isAdmin: boolean = getReduxAuthSliceIsAdmin();
 
     /*
      * We are passing in the entire prop so that if we add more rights in the future, we can them without the need to pass in more information

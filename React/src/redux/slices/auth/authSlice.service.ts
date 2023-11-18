@@ -95,19 +95,19 @@ export const useReduxAuthSliceService = () => {
         return authSlice.accessToken;
     };
 
-    const getReduxAuthSliceIsUserAuthenticated = (): string => {
+    const getReduxAuthSliceIsUserAuthenticated = (): boolean => {
         return authSlice.isAuthenticated;
     };
 
     /* Return entire auth slice object*/
-    const getReduxAuthSlice = (): string => {
+    const getReduxAuthSlice = () => {
         return authSlice;
     };
-    const getReduxAuthSliceIsAdmin = (): string => {
+    const getReduxAuthSliceIsAdmin = (): boolean => {
         return authSlice.isAdmin;
     };
 
-    const getReduxAuthSliceIsSuperAdmin = (): string => {
+    const getReduxAuthSliceIsSuperAdmin = (): boolean => {
         return authSlice.isSuperAdmin;
     };
 

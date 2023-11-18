@@ -3,6 +3,7 @@ import {setError, setIsRefresh, setSuccess} from './tabsSlice';
 
 export const useReduxTabsSliceService = () => {
     const dispatch = useDispatch();
+    // @ts-ignore
     const tabsSlice = useSelector((state) => state.tabsSlice);
 
     const setReduxTabsSliceIsSuccess = (bool: boolean) => {
