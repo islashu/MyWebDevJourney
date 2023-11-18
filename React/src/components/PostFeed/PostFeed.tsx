@@ -4,7 +4,6 @@ import {useIntersection} from '@mantine/hooks';
 import {useInfiniteQuery} from '@tanstack/react-query';
 import axios from '../../api/config/axios.ts';
 import {Loader2} from 'lucide-react';
-import {mockdata1, mockdata3, mockdata2, getDataBasedOnURL} from '../../api/posts/mockdata.ts';
 import {Outlet, useParams} from 'react-router-dom';
 import {PaginationTO, PostTO, PostTOProps} from '../../model/post.model.ts';
 import {POSTS_INFINITE_SCROLL_PAGINATION_RESULTS} from '../config.ts';
