@@ -2,7 +2,6 @@ import EditorJS from '@editorjs/editorjs';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import TextareaAutosize from 'react-textarea-autosize';
-// import { uploadFiles } from '@/lib/uploadthing'
 // import { PostCreationRequest, PostValidator } from '@/lib/validators/postData'
 import {useMutation} from '@tanstack/react-query';
 import axios from 'axios';
